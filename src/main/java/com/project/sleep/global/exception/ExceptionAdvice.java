@@ -96,10 +96,4 @@ public class ExceptionAdvice extends ResponseEntityExceptionHandler {
                 .status(errorCode.getHttpStatus().value())
                 .body(BaseResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errorArgs));
     }
-
-    private ResponseEntity<BaseResponse<String>> handleExceptionInternalFalse(BaseCode errorCode, String errorPoint) {
-        return ResponseEntity
-                .status(errorCode.getHttpStatus().value())
-                .body(BaseResponse.onFailure(errorCode.getCode(), errorCode.getMessage(), errorPoint));
-    }
 }
