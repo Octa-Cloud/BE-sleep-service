@@ -10,7 +10,7 @@ COPY src/ src/
 RUN gradle build --no-daemon -x test
 
 # Runtime stage
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre-jammy
 
 # Create non-root user for security
 RUN groupadd -r appuser && useradd -r -g appuser appuser
