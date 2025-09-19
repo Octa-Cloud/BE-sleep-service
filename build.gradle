@@ -21,9 +21,7 @@ repositories {
 dependencies {
     // Spring
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // Kafka
@@ -36,15 +34,6 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
-    // QueryDSL
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-    annotationProcessor 'jakarta.persistence:jakarta.persistence-api:3.1.0'
-    annotationProcessor 'jakarta.annotation:jakarta.annotation-api:2.1.1'
-
-    // MySQL
-    runtimeOnly 'com.mysql:mysql-connector-j'
-
     // MongoDB
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 
@@ -56,15 +45,11 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
     // TSID / 기타
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.0'
-    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
+    implementation 'com.github.f4b6a3:tsid-creator:5.2.6'
 
     // Redis / Cache
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
-
-    // SMTP
-    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -73,7 +58,6 @@ dependencies {
     testImplementation 'org.awaitility:awaitility:4.2.0'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-    testImplementation 'com.h2database:h2'
     testImplementation 'org.testcontainers:mongodb:1.19.7'
     testImplementation 'org.testcontainers:junit-jupiter:1.19.7'
 }

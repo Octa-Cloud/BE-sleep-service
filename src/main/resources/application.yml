@@ -1,0 +1,39 @@
+server:
+  port: 8000
+
+spring:
+  data:
+    mongodb:
+      uri: ${MONGO_URI:mongodb://localhost:27017/mong}
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+
+jwt-properties:
+  key: ${JWT_KEY:KItFWMZokpiSj6ABi42XJpNWbBqUJ4UT3mhLrXk//IjI2TgQy2Bk+2KrCk4cQDl8oFsSYH9Gr++Lqr2w6CYJnQ==}
+  access-token-subject: AccessToken
+  refresh-token-subject: RefreshToken
+  token-header: Authorization
+  bearer: Bearer
+  id: id
+
+#logging:
+#  level:
+#    root: INFO
+#    org.springframework: DEBUG
+#    org.springframework.web: DEBUG
+#    org.springframework.boot: DEBUG
+#    com.project.user: DEBUG
+#    org.hibernate.SQL: DEBUG
+#    org.hibernate.type.descriptor.sql: TRACE
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    groups-order: DESC
+    tags-sorter: alpha
+    operations-sorter: method
+    enabled: true
+  paths-to-match:
+    - /api/**
