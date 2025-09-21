@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Document(collection = "daily_report")
 public class DailyReport {
 
     @Id
     @Field("daily_report_no")
-    private String dailyReportNo = TsidCreator.getTsid().toString();
+    private String dailyReportNo;
 
     @Field("sleep_date")
     private LocalDate sleepDate;
@@ -55,6 +55,10 @@ public class DailyReport {
     @Field("user_no")
     private String userNo; // FK → User
 
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public class Analysis{
         private String title;
         private String description;

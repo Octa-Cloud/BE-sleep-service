@@ -11,15 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Document(collection = "periodic_report")
 public class PeriodicReport {
 
     @Id
     @Field("periodic_report_no")
-    private String periodicReportNo = TsidCreator.getTsid().toString();
+    private String periodicReportNo;
 
     private Type type; // Enum('weekly', 'monthly')
 
@@ -48,13 +48,22 @@ public class PeriodicReport {
 
     // 임베디드 컬럼이었지만 굳이 필요 없어서 예측 점수만 가진 리스트로 변경
     @Field("score_prediction")
-    private List<Integer> scorePrediction;
+    private Prediction scorePrediction;
 
     @Field("user_no")
     private String userNo; // FK → User
 
     public enum Type {
         weekly, monthly
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public class Prediction{
+        private String description;
+        private List<Integer> scorePrediction;
     }
 }
 

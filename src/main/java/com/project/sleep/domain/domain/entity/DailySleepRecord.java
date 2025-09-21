@@ -10,15 +10,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Document(collection = "daily_sleep_record")
 public class DailySleepRecord {
 
     @Id
     @Field("daily_sleep_record_no")
-    private String dailySleepRecordNo = TsidCreator.getTsid().toString();
+    private String dailySleepRecordNo;
 
     @Field("sleep_date")
     private LocalDate sleepDate;
