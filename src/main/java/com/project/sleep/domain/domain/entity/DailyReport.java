@@ -55,16 +55,16 @@ public class DailyReport {
     @Field("user_no")
     private String userNo; // FK → User
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public class Analysis{
-        private String title;
-        private String description;
-        private List<String> steps;
-        private String difficulty;
-        private String effect;
-    }
+}
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+class Analysis{
+    private String title;
+    private String description;
+    private List<String> steps;
+    private String difficulty;
+    private String effect;
 }
 

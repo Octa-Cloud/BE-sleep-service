@@ -56,14 +56,12 @@ public class PeriodicReport {
     public enum Type {
         weekly, monthly
     }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public class Prediction{
-        private String description;
-        private List<Integer> scorePrediction;
-    }
 }
-
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+class Prediction{
+    private String description;
+    private List<Integer> scorePrediction;
+}
