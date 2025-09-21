@@ -22,7 +22,7 @@ for (let i = 1; i <= 100; i++) {
             difficulty: "보통",
             effect: "수면의 질 개선"
         }],
-        user_no: `user-${Math.floor(Math.random() * 10) + 1}`
+        user_no: "756339877658854246"
     });
 }
 print("DailyReport 100개 생성 완료.");
@@ -38,7 +38,7 @@ for (let i = 1; i <= 100; i++) {
         bed_time: "23:30", // 예시
         wake_time: "07:00", // 예시
         total_sleep_time: Math.floor(Math.random() * 120) + 360,
-        user_no: `user-${Math.floor(Math.random() * 10) + 1}`
+        user_no: "756339877658854246"
     });
 }
 print("DailySleepRecord 100개 생성 완료.");
@@ -64,7 +64,7 @@ for (let i = 1; i <= 100; i++) {
             description: "예상 점수",
             scorePrediction: Array.from({length: 5}, () => Math.floor(Math.random() * 100))
         },
-        user_no: `user-${Math.floor(Math.random() * 10) + 1}`
+        user_no: "756339877658854246"
     });
 }
 print("PeriodicReport 100개 생성 완료.");
