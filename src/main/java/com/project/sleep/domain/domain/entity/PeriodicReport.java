@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,7 @@ public class PeriodicReport {
     private int totalSleepTime;
 
     @Field("bed_time")
-    private String bedTime;
+    private LocalDateTime bedTime;
 
     @Field("deep_sleep_ratio")
     private double deepSleepRatio;
