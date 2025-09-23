@@ -1,6 +1,5 @@
 package com.project.sleep.domain.domain.entity;
 
-import com.github.f4b6a3.tsid.TsidCreator;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -8,7 +7,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @NoArgsConstructor
@@ -55,16 +53,5 @@ public class DailyReport {
     @Field("user_no")
     private String userNo; // FK → User
 
-}
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-class Analysis{
-    private String title;
-    private String description;
-    private List<String> steps;
-    private String difficulty;
-    private String effect;
 }
 
