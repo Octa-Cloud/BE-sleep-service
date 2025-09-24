@@ -1,9 +1,10 @@
 package com.project.sleep.domain.application.dto.response;
 
 import com.project.sleep.domain.domain.entity.DailyReport;
-
+import lombok.Builder;
 import java.util.List;
 
+@Builder
 public record AnalysisDayResponse(
         // 수면 단계별 시간 (분 단위)
         Integer deepSleepTime,
@@ -23,37 +24,30 @@ public record AnalysisDayResponse(
         List<String> noiseEventTypes, // 수면 중 소음 이벤트 유형들
 
         // 일일 AI 분석 리포트
-        List<Analysis> analysis
+         String analysisTitle,
+         String analysisDescription,
+         List<String> analysisSteps,
+         String analysisDifficulty,
+         String analysisEffect
 ) {
-    public record Analysis(
-            String title,
-            String description,
-            List<String> steps,
-            String difficulty,
-            String effect
-    ) {}
-    // 서비스 코드 간결화를 위해 사용.
-    public static AnalysisDayResponse mapToResponse(DailyReport report) {
-        return new AnalysisDayResponse(
-                report.getDeepSleepTime(),
-                report.getLightSleepTime(),
-                report.getRemSleepTime(),
-                report.getDeepSleepRatio(),
-                report.getLightSleepRatio(),
-                report.getRemSleepRatio(),
-                report.getMemo(),
-                report.getMicrowaveGrades(),
-                report.getNoiseEventTypes(),
-                report.getAnalysis() == null ? List.of() :
-                        report.getAnalysis().stream()
-                                .map(a->new AnalysisDayResponse.Analysis(
-                                        a.getTitle(),
-                                        a.getDescription(),
-                                        a.getSteps(),
-                                        a.getDifficulty(),
-                                        a.getEffect()
-                                ))
-                                .toList()
-        );
+
+    // 변환 로직을 DTO 안에만 둔다
+    public static AnalysisDayResponse from(DailyReport report) {
+        return AnalysisDayResponse.builder()
+                .deepSleepTime(report.getDeepSleepTime())
+                .lightSleepTime(report.getLightSleepTime())
+                .remSleepTime(report.getRemSleepTime())
+                .deepSleepRatio(report.getDeepSleepRatio())
+                .lightSleepRatio(report.getLightSleepRatio())
+                .remSleepRatio(report.getRemSleepRatio())
+                .memo(report.getMemo())
+                .microwaveGrades(report.getMicrowaveGrades())
+                .noiseEventTypes(report.getNoiseEventTypes())
+                .analysisTitle(report.getAnalysisTitle())
+                .analysisDescription(report.getAnalysisDescription())
+                .analysisSteps(report.getAnalysisSteps())
+                .analysisDifficulty(report.getAnalysisDifficulty())
+                .analysisEffect(report.getAnalysisEffect())
+                .build();
     }
 }
