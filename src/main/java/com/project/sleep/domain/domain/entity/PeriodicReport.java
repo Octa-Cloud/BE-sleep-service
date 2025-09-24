@@ -6,6 +6,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -18,7 +21,7 @@ public class PeriodicReport {
     @Field("periodic_report_no")
     private String periodicReportNo;
 
-    private String type; // Enum('weekly', 'monthly')
+    private Type type; // Enum('weekly', 'monthly')
 
     private LocalDate date;
 
@@ -28,7 +31,7 @@ public class PeriodicReport {
     private int totalSleepTime;
 
     @Field("bed_time")
-    private String bedTime;
+    private LocalDateTime bedTime;
 
     @Field("deep_sleep_ratio")
     private double deepSleepRatio;
@@ -43,11 +46,17 @@ public class PeriodicReport {
     private String weakness;
     private String recommendation;
 
-    // 임베디드 컬럼이었지만 굳이 필요 없어서 예측 점수만 가진 리스트로 변경
+    @Field("predict_description")
+    private String predictDescription;
+
     @Field("score_prediction")
-    private Prediction scorePrediction;
+    private List<Integer> scorePrediction = new ArrayList();
 
     @Field("user_no")
     private String userNo; // FK → User
+
+    public enum Type{
+        weekly, monthly
+    }
 
 }
