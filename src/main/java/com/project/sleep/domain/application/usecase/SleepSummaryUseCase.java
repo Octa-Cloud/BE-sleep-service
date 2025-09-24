@@ -2,7 +2,7 @@ package com.project.sleep.domain.application.usecase;
 
 import com.project.sleep.domain.application.dto.response.SleepSummaryResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
-import com.project.sleep.domain.domain.service.SleepService;
+import com.project.sleep.domain.domain.service.DailySleepRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SleepSummaryUseCase {
 
-    private final SleepService sleepService;
+    private final DailySleepRecordService dailySleepRecordService;
 
     // Daily API 로직
     public List<SleepSummaryResponse> getDailySummary(LocalDate date) {
-        List<DailySleepRecord> records = sleepService.getDailySleepRecordsForRecent8Days(date);
+        List<DailySleepRecord> records = dailySleepRecordService.getDailySleepRecordsForRecent8Days(date);
         return records.stream()
                 .map(SleepSummaryResponse::from)
                 .collect(Collectors.toList());
@@ -25,7 +25,7 @@ public class SleepSummaryUseCase {
 
     // Recent API 로직
     public SleepSummaryResponse getRecentSummary(LocalDate date) {
-        DailySleepRecord record = sleepService.getDailySleepRecordByDate(date);
+        DailySleepRecord record = dailySleepRecordService.getDailySleepRecordByDate(date);
         if (record == null) {
             return null;
         }

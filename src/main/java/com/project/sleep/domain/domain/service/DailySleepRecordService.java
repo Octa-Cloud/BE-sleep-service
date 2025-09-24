@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class SleepService {
+public class DailySleepRecordService {
 
     private final DailySleepRecordRepository dailySleepRecordRepository;
 
