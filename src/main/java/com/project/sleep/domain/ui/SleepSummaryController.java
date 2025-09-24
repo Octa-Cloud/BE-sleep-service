@@ -20,16 +20,15 @@ public class SleepSummaryController {
 
     private final SleepSummaryUseCase sleepSummaryUseCase;
 
-    // Daily API 로직 (BaseResponse 적용)
+    // Daily API 로직
     @GetMapping("/daily")
     public ResponseEntity<BaseResponse<List<SleepSummaryResponse>>> getDailySleepSummary(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         List<SleepSummaryResponse> dailySummaries = sleepSummaryUseCase.getDailySummary(date);
 
-        // BaseResponse.onSuccess()를 사용하여 응답을 감싸서 반환
         return ResponseEntity.ok(BaseResponse.onSuccess(dailySummaries));
     }
 
-    // Recent API 로직 (변경 없이 그대로 유지)
+    // Recent API 로직
     @GetMapping("/recent")
     public ResponseEntity<SleepSummaryResponse> getRecentSleepSummary(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         SleepSummaryResponse recentSummary = sleepSummaryUseCase.getRecentSummary(date);

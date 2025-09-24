@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class SleepSummaryUseCase {
     private final DailySleepRecordService dailySleepRecordService;
 
-    // Daily API 로직 (변경 없음)
+    // Daily API 로직
     public List<SleepSummaryResponse> getDailySummary(LocalDate date) {
         List<DailySleepRecord> records = dailySleepRecordService.getDailySleepRecordsForRecent8Days(date);
         return records.stream()
@@ -24,7 +24,7 @@ public class SleepSummaryUseCase {
                 .collect(Collectors.toList());
     }
 
-    // Recent API 로직 (변경)
+    // Recent API 로직
     public SleepSummaryResponse getRecentSummary(LocalDate date) {
         DailySleepRecord record = dailySleepRecordService.getDailySleepRecordByDate(date);
 
