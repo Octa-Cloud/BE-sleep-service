@@ -31,8 +31,12 @@ public enum GlobalErrorStatus implements BaseCodeInterface {
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "예외처리 테스트입니다."),
 
     // Mail
-    FAILED_SEND_VERIFY_CODE(HttpStatus.INTERNAL_SERVER_ERROR, "MAIL001", "인증번호 전송에 실패하였습니다.")
+    FAILED_SEND_VERIFY_CODE(HttpStatus.INTERNAL_SERVER_ERROR, "MAIL001", "인증번호 전송에 실패하였습니다."),
+
+    // Sleep Record
+    _SLEEP_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "SLEEP_404_001", "해당 날짜의 수면 기록을 찾을 수 없습니다.")
     ;
+
 
     private final HttpStatus httpStatus;
     private final boolean isSuccess = false;
