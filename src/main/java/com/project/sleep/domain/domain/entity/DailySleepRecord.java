@@ -35,5 +35,5 @@ public class DailySleepRecord {
     private int totalSleepTime;
 
     @Field("user_no")
-    private String userNo; // FK → User
+    private Long userNo; // FK → User
 }
