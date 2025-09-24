@@ -1,28 +1,25 @@
 package com.project.sleep.domain.application.dto.response;
 
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
-import lombok.Getter;
-import lombok.Setter;
-import java.time.LocalTime;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
-@Getter
-@Setter
-public class SleepSummaryResponse {
-
-    private int score;
-    private int totalSleepTime;
-    private LocalTime bedTime;
-    private LocalTime wakeTime;
-    private LocalDate date;
+// record로 변경
+public record SleepSummaryResponse(
+        int score,
+        int totalSleepTime,
+        LocalTime bedTime,
+        LocalTime wakeTime,
+        LocalDate date
+) {
 
     public static SleepSummaryResponse from(DailySleepRecord record) {
-        SleepSummaryResponse response = new SleepSummaryResponse();
-        response.setScore(record.getScore());
-        response.setTotalSleepTime(record.getTotalSleepTime());
-        response.setBedTime(record.getBedTime());
-        response.setWakeTime(record.getWakeTime());
-        response.setDate(record.getSleepDate());
-        return response;
+        return new SleepSummaryResponse(
+                record.getScore(),
+                record.getTotalSleepTime(),
+                record.getBedTime(),
+                record.getWakeTime(),
+                record.getSleepDate()
+        );
     }
 }
