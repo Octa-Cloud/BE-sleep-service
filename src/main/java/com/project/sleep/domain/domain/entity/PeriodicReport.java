@@ -53,7 +53,7 @@ public class PeriodicReport {
     private List<Integer> scorePrediction = new ArrayList();
 
     @Field("user_no")
-    private String userNo; // FK → User
+    private Long userNo; // FK → User
 
     public enum Type{
         weekly, monthly

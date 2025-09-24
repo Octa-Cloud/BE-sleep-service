@@ -22,14 +22,6 @@ public record PeriodicReportResponse(
 
 
 ){
-    public enum Type{
-        weekly, monthly
-    }
-
-    public record Prediction(
-            String description,
-            List<Integer> scorePrediction
-    ){}
 
     public static PeriodicReportResponse mapToResponse(PeriodicReport report){
 
@@ -60,7 +52,7 @@ public record PeriodicReportResponse(
                 "",
                 "",
                 "",
-                null
+                List.of()
         );
     }
 }
