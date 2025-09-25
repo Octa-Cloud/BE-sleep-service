@@ -15,7 +15,8 @@ public interface PeriodicReportApiSpec {
 
     @Operation(
             summary = "주간 통계 조회 API",
-            description = "주간 시작 날짜를 선택 후, 평균수치와 AI 점수를 반환합니다."
+            description = "주간 시작 날짜를 선택 후,"
+                    + "평균수치와 AI 점수를 반환합니다."
     )
     @GetMapping("/weekly")
     PeriodicReportResponse getWeeklyReport(
@@ -23,6 +24,11 @@ public interface PeriodicReportApiSpec {
             @Parameter(description = "조회 기준 날짜 (해당 주의 시작 날짜를 반환)") LocalDate date
     );
 
+    @Operation(
+            summary = "월간 통계 조회 API",
+            description = "월간 시작 날짜를 선택 후,"
+                    + "평균수치와 AI 점수를 반환합니다."
+    )
     @GetMapping("/monthly")
     PeriodicReportResponse getMonthlyReport(
             @Parameter(hidden = true) Long userNo,
