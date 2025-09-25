@@ -2,32 +2,30 @@ package com.project.sleep.domain.application.usecase;
 
 import com.project.sleep.domain.application.dto.response.GetSleepPatternsResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
-import com.project.sleep.domain.domain.repository.SleepRecordRepository;
+import com.project.sleep.domain.domain.service.GetSleepPatternsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true) // 조회 전용으로 최적화
 public class GetSleepPatternsUseCase {
 
-    private final SleepRecordRepository sleepRecordRepository;
+    private final GetSleepPatternsService getSleepPatternsService;
 
-    public List<GetSleepPatternsResponse> getSleepPatterns(LocalDate startDate, LocalDate endDate) {
+    public List<GetSleepPatternsResponse> getSleepPatterns(Long userNo, LocalDate startDate, LocalDate endDate) {
 
-        List<DailySleepRecord> sleepRecords = sleepRecordRepository.findAllBySleepDateBetween(startDate, endDate);
+        List<DailySleepRecord> sleepRecords = getSleepPatternsService.getSleepRecords(userNo, startDate, endDate);
 
+        // 빌더, toList 수정
         return sleepRecords.stream()
-                .map(record -> new GetSleepPatternsResponse(
-                        record.getSleepDate(),
-                        record.getScore(),
-                        record.getTotalSleepTime()
-                ))
-                .collect(Collectors.toList());
+                .map(record -> GetSleepPatternsResponse.builder()
+                        .date(record.getSleepDate())
+                        .score(record.getScore())
+                        .totalSleepTime(record.getTotalSleepTime())
+                        .build())
+                .toList();
     }
 }
