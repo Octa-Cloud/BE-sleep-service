@@ -2,6 +2,7 @@ package com.project.sleep.domain.ui;
 
 import com.project.sleep.domain.application.dto.response.GetSleepPatternsResponse;
 import com.project.sleep.domain.application.usecase.GetSleepPatternsUseCase;
+import com.project.sleep.domain.ui.spec.SleepPatternsApiSpec;
 import com.project.sleep.global.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,10 +18,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/sleep/patterns")
-public class SleepPatternsController {
+public class SleepPatternsController implements SleepPatternsApiSpec {
 
     private final GetSleepPatternsUseCase getSleepPatternsUseCase;
 
+    @Override
     @GetMapping
     public ResponseEntity<List<GetSleepPatternsResponse>> getSleepPatterns(
             @CurrentUser Long userNo,
