@@ -2,6 +2,7 @@ package com.project.sleep.domain.ui;
 
 import com.project.sleep.domain.application.dto.response.AnalysisDayResponse;
 import com.project.sleep.domain.application.usecase.AnalysisDayUseCase;
+import com.project.sleep.domain.domain.entity.DailyReport;
 import com.project.sleep.global.annotation.CurrentUser;
 import com.project.sleep.global.common.BaseResponse;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,12 @@ public class AnalysisDayController implements AnalysisDayApiSpec {
     @Override
     @GetMapping("/daily")
     public BaseResponse<AnalysisDayResponse> getDailyAnalysis(
-            @CurrentUser Long userId,
+            @CurrentUser Long userNo,
             @RequestParam(value = "date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
     ){
-        //내부적으로 userId 넘겨줌, 조회시 유저구분을 위해.
-        AnalysisDayResponse response = analysisDayUseCase.getDailyAnalysis(userId, date);
-        return BaseResponse.onSuccess(response);
+        //내부적으로 userNo 넘겨줌, 조회시 유저구분을 위해.
+        DailyReport report = analysisDayUseCase.getDailyAnalysis(userNo, date);
+        return BaseResponse.onSuccess(AnalysisDayResponse.from(report));
     }
 }

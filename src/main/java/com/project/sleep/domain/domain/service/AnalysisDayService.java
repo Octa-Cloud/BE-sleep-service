@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -18,22 +19,21 @@ public class AnalysisDayService {
 
     private final DailyReportRepository dailyReportRepository;
 
-    public AnalysisDayResponse getDailyAnalysis(Long userId, LocalDate date) {
+    public DailyReport findByUserNoAndDate(Long userNo, LocalDate date) {
 
         // date가 null 이면 오늘 기준으로 조회
-        LocalDate targetDate = (date != null) ? date : LocalDate.now();
+       // LocalDate targetDate = (date != null) ? date : LocalDate.now();
 
-        // UTC 자정 기준 하루 범위
-        ZonedDateTime startUtc = targetDate.atStartOfDay(ZoneId.of("UTC"));
-        ZonedDateTime endUtc   = startUtc.plusDays(1);
+        LocalDate targetDate = (date != null)
+                ? date
+                : LocalDate.now(ZoneId.of("Asia/Seoul"));
 
-        Date from = Date.from(startUtc.toInstant());
-        Date to   = Date.from(endUtc.toInstant());
+        // Mongo에 저장된 값이 UTC 자정(…T00:00:00Z)라면, 동일하게 UTC 자정으로 변환
+        Date key = Date.from(targetDate.atStartOfDay(ZoneOffset.UTC).toInstant());
 
-        DailyReport report = dailyReportRepository
-                .findOneByUserNoAndSleepDateBetween(userId, from, to)
+        return dailyReportRepository
+                .findOneByUserNoAndSleepDate(userNo, key)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
-        return AnalysisDayResponse.from(report);
     }
 }

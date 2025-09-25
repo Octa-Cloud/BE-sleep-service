@@ -1,11 +1,10 @@
 package com.project.sleep.domain.domain.entity;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.FieldType;
-import org.springframework.data.mongodb.core.mapping.MongoId;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,16 +15,15 @@ import java.util.List;
 @Getter
 public class DailyReport {
 
-    // Mongo의 _id(ObjectId)
-    @MongoId(FieldType.OBJECT_ID)      // 또는: @Id private String id;
-    private String id;
+    @Id
+    private String dailyReportId;   // ← 여기서 ‘id’ 대신 문서명 포함
 
-//    @Id   이 부분 때문에 오류발생 -> 포스트맨 체크시 500을 리턴
+    // 비즈니스 키(표시/정렬용)
     @Field("daily_report_no")
     private Long dailyReportNo;
 
-    @Field("sleep_date")
-    private LocalDate sleepDate;
+    @Field(value = "sleep_date")
+    private LocalDateTime sleepDate;
 
     @Field("deep_sleep_time")
     private int deepSleepTime;

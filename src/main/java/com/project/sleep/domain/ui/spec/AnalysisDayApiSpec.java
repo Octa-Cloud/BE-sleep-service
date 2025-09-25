@@ -17,7 +17,7 @@ public interface AnalysisDayApiSpec {
 
     )
     BaseResponse<AnalysisDayResponse> getDailyAnalysis(
-            @Parameter(hidden = true,description = "JWT에서 추출된 사용자 ID") Long userId,
+            @Parameter(hidden = true,description = "JWT에서 추출된 사용자 ID") Long userNo,
             @Parameter(description = "조회 날짜 (yyyy-MM-dd). 미지정 시 오늘", example = "2025-09-22") LocalDate date
     );
 }
