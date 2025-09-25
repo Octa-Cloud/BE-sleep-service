@@ -19,11 +19,8 @@ public class SleepSummaryUseCase {
 
     // Daily API 로직
     public List<SleepSummaryResponse> getDailySummary(Long userNo, LocalDate date) {
-        DailySleepRecord record = dailySleepRecordService.getDailySleepRecordByUserNoAndDate(userNo, date);
-
-        if (record == null) {
-            throw new RestApiException(GlobalErrorStatus._SLEEP_RECORD_NOT_FOUND); // 데이터가 없을 때 예외 발생
-        }
+        DailySleepRecord record = dailySleepRecordService.getDailySleepRecordByUserNoAndDate(userNo, date)
+                .orElseThrow(() -> new RestApiException(GlobalErrorStatus._SLEEP_RECORD_NOT_FOUND));
 
         return Collections.singletonList(SleepSummaryResponse.from(record));
     }
