@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,21 +18,22 @@ public class SleepSummaryUseCase {
     private final DailySleepRecordService dailySleepRecordService;
 
     // Daily API 로직
-    public List<SleepSummaryResponse> getDailySummary(LocalDate date) {
-        List<DailySleepRecord> records = dailySleepRecordService.getDailySleepRecordsForRecent8Days(date);
-        return records.stream()
-                .map(SleepSummaryResponse::from)
-                .collect(Collectors.toList());
-    }
-
-    // Recent API 로직
-    public SleepSummaryResponse getRecentSummary(LocalDate date) {
-        DailySleepRecord record = dailySleepRecordService.getDailySleepRecordByDate(date);
+    public List<SleepSummaryResponse> getDailySummary(Long userNo, LocalDate date) {
+        DailySleepRecord record = dailySleepRecordService.getDailySleepRecordByUserNoAndDate(userNo, date);
 
         if (record == null) {
             throw new RestApiException(GlobalErrorStatus._SLEEP_RECORD_NOT_FOUND); // 데이터가 없을 때 예외 발생
         }
 
-        return SleepSummaryResponse.from(record);
+        return Collections.singletonList(SleepSummaryResponse.from(record));
+    }
+
+    // Recent API 로직
+    public List<SleepSummaryResponse> getRecentSummary(Long userNo) {
+        List<DailySleepRecord> records = dailySleepRecordService.getRecent8SleepRecordsByUserNo(userNo);
+
+        return records.stream()
+                .map(SleepSummaryResponse::from)
+                .collect(Collectors.toList());
     }
 }

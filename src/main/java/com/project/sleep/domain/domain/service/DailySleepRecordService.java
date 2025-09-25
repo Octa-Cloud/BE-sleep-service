@@ -14,11 +14,19 @@ public class DailySleepRecordService {
     private final DailySleepRecordRepository dailySleepRecordRepository;
 
     public List<DailySleepRecord> getDailySleepRecordsForRecent8Days(LocalDate date) {
-        // 수정된 부분: 고정된 기간이 아닌, 가장 최근 8개의 데이터를 조회합니다.
         return dailySleepRecordRepository.findTop8BySleepDateLessThanEqualOrderBySleepDateDesc(date);
     }
 
     public DailySleepRecord getDailySleepRecordByDate(LocalDate date) {
         return dailySleepRecordRepository.findBySleepDate(date);
+    }
+
+
+    public List<DailySleepRecord> getRecent8SleepRecordsByUserNo(Long userNo) {
+        return dailySleepRecordRepository.findTop8ByUserNoOrderBySleepDateDesc(userNo);
+    }
+
+    public DailySleepRecord getDailySleepRecordByUserNoAndDate(Long userNo, LocalDate date) {
+        return dailySleepRecordRepository.findByUserNoAndSleepDate(userNo, date);
     }
 }

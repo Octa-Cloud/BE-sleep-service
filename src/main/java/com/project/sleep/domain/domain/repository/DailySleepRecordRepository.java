@@ -9,4 +9,8 @@ public interface DailySleepRecordRepository extends MongoRepository<DailySleepRe
     // 요청된 날짜(date)보다 작거나 같은 날짜들 중, 가장 최근 8개 데이터를 내림차순으로 조회
     List<DailySleepRecord> findTop8BySleepDateLessThanEqualOrderBySleepDateDesc(LocalDate date);
     DailySleepRecord findBySleepDate(LocalDate date);
+
+
+    List<DailySleepRecord> findTop8ByUserNoOrderBySleepDateDesc(Long userNo);
+    DailySleepRecord findByUserNoAndSleepDate(Long userNo, LocalDate sleepDate);
 }
