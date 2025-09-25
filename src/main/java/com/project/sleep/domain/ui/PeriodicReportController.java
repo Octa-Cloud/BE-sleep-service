@@ -4,10 +4,9 @@ import com.project.sleep.domain.application.dto.response.PeriodicReportResponse;
 import com.project.sleep.domain.application.usecase.PeriodicReportUseCase;
 import com.project.sleep.domain.ui.spec.PeriodicReportApiSpec;
 import com.project.sleep.global.annotation.CurrentUser;
+import com.project.sleep.global.common.BaseResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,20 +23,20 @@ public class PeriodicReportController implements PeriodicReportApiSpec {
 
 
     @Override
-    public PeriodicReportResponse getWeeklyReport(
+    public BaseResponse<PeriodicReportResponse> getWeeklyReport(
             @CurrentUser Long userNo,
             @RequestParam(value = "date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return periodicReportUseCase.getPeriodicReport(WEEKLY, userNo, date);
+        return BaseResponse.onSuccess(periodicReportUseCase.getPeriodicReport(WEEKLY, userNo, date));
     }
 
 
     @Override
-    public PeriodicReportResponse getMonthlyReport(
+    public BaseResponse<PeriodicReportResponse> getMonthlyReport(
             @CurrentUser Long userNo,
             @RequestParam(value = "date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        return periodicReportUseCase.getPeriodicReport(MONTHLY, userNo, date);
+        return BaseResponse.onSuccess(periodicReportUseCase.getPeriodicReport(MONTHLY, userNo, date));
 
     }
 }

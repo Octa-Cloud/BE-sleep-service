@@ -1,6 +1,7 @@
 package com.project.sleep.domain.ui.spec;
 
 import com.project.sleep.domain.application.dto.response.PeriodicReportResponse;
+import com.project.sleep.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,7 +20,7 @@ public interface PeriodicReportApiSpec {
                     + "평균수치와 AI 점수를 반환합니다."
     )
     @GetMapping("/weekly")
-    PeriodicReportResponse getWeeklyReport(
+    BaseResponse<PeriodicReportResponse> getWeeklyReport(
             @Parameter(hidden = true) Long userNo,
             @Parameter(description = "조회 기준 날짜 (해당 주의 시작 날짜를 반환)") LocalDate date
     );
@@ -30,7 +31,7 @@ public interface PeriodicReportApiSpec {
                     + "평균수치와 AI 점수를 반환합니다."
     )
     @GetMapping("/monthly")
-    PeriodicReportResponse getMonthlyReport(
+    BaseResponse<PeriodicReportResponse> getMonthlyReport(
             @Parameter(hidden = true) Long userNo,
             @Parameter(description = "조회 기준 날짜 (해당 월의 시작 날짜를 반환)") LocalDate date
     );
