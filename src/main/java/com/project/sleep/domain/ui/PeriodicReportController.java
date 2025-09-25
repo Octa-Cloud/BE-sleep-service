@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
+import static com.project.sleep.domain.domain.entity.PeriodicReport.Type.MONTHLY;
+import static com.project.sleep.domain.domain.entity.PeriodicReport.Type.WEEKLY;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/sleep/analysis")
@@ -25,14 +28,14 @@ public class PeriodicReportController {
             @CurrentUser Long userNo,
             @RequestParam(value = "date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        return periodicReportUseCase.getPeriodicReport("weekly", userNo, date);
+        return periodicReportUseCase.getPeriodicReport(WEEKLY, userNo, date);
     }
     @GetMapping("/monthly")
     public PeriodicReportResponse getMonthlyReport(
             @CurrentUser Long userNo,
             @RequestParam(value = "date", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date){
-        return periodicReportUseCase.getPeriodicReport("monthly", userNo, date);
+        return periodicReportUseCase.getPeriodicReport(MONTHLY, userNo, date);
 
     }
 }

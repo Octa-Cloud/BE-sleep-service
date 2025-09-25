@@ -14,7 +14,7 @@ public class PeriodicReportService {
 
     private final PeriodicReportRepository periodicReportRepository;
 
-    public Optional<PeriodicReport> getReport(String type, Long userNo, LocalDate date) {
+    public Optional<PeriodicReport> getReport(PeriodicReport.Type type, Long userNo, LocalDate date) {
 
         // 날짜 범위 (포함 여부 처리)
         LocalDate start = date;

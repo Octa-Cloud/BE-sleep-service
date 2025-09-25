@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface PeriodicReportRepository extends MongoRepository<PeriodicReport, String> {
     Optional<PeriodicReport> findByUserNoAndTypeAndDateBetween(
-            Long userNo, String type, LocalDate start, LocalDate end);
+            Long userNo, PeriodicReport.Type type, LocalDate start, LocalDate end);
 }

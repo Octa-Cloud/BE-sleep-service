@@ -56,7 +56,7 @@ public class PeriodicReport {
     private Long userNo; // FK → User
 
     public enum Type{
-        weekly, monthly
+        WEEKLY, MONTHLY
     }
 
 }
