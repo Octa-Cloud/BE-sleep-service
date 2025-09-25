@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +37,7 @@ public interface SleepSummaryApiSpec {
             }
     )
     @GetMapping("/daily")
-    ResponseEntity<BaseResponse<List<SleepSummaryResponse>>> getDailySleepSummary(
+    BaseResponse<SleepSummaryResponse> getDailySleepSummary(
             @Parameter(hidden = true) @CurrentUser Long userNo,
             @Parameter(description = "조회하려는 날짜 (yyyy-MM-dd)", required = true) @RequestParam LocalDate date
     );
@@ -55,7 +54,7 @@ public interface SleepSummaryApiSpec {
             }
     )
     @GetMapping("/recent")
-    ResponseEntity<BaseResponse<List<SleepSummaryResponse>>> getRecentSleepSummary(
+    BaseResponse<List<SleepSummaryResponse>> getRecentSleepSummary(
             @Parameter(hidden = true) @CurrentUser Long userNo
     );
 }
