@@ -4,12 +4,12 @@ import com.project.sleep.domain.application.dto.response.PeriodicReportResponse;
 import com.project.sleep.domain.domain.entity.PeriodicReport;
 import com.project.sleep.domain.domain.service.PeriodicReportService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 @RequiredArgsConstructor
-@Component
+@Service
 public class PeriodicReportUseCase {
     private final PeriodicReportService periodicReportService;
 
