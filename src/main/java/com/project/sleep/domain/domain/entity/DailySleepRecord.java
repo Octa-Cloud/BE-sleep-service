@@ -36,4 +36,5 @@ public class DailySleepRecord {
 
     @Field("user_no")
     private Long userNo;
+
 }
