@@ -1,12 +1,11 @@
 package com.project.sleep.domain.domain.repository;
 
-import com.project.sleep.domain.domain.entity.DailySleepRecord;
+import com.project.sleep.domain.domain.entity.DailyReport;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-import java.time.LocalDate;
-import java.util.List;
+import java.util.Date;
+import java.util.Optional;
 
-public interface DailyReportRepository extends MongoRepository<DailySleepRecord, String> {
-    List<DailySleepRecord> findByUserNoOrderBySleepDateDesc(String userNo);
-    DailySleepRecord findByUserNoAndSleepDate(String userNo, LocalDate sleepDate);
+public interface DailyReportRepository extends MongoRepository<DailyReport, String> {
+    Optional<DailyReport> findOneByUserNoAndSleepDate(Long userNo, Date sleepDate);
 }
