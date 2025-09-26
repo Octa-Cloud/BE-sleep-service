@@ -17,6 +17,11 @@ public class GetSleepPatternsUseCase {
 
     public List<GetSleepPatternsResponse> getSleepPatterns(Long userNo, LocalDate startDate, LocalDate endDate) {
 
+        // 비즈니스 규칙: startDate는 endDate보다 이후일 수 없음
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("startDate must be before endDate");
+        }
+
         List<DailySleepRecord> sleepRecords = getSleepPatternsService.getSleepRecords(userNo, startDate, endDate);
 
         // 빌더, toList 수정
