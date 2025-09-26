@@ -53,7 +53,7 @@ class PeriodicReportUseCaseTest {
 
     @Test
     @DisplayName("리포트가 존재하면 해당 리포트를 반환한다")
-    void getPeriodicReport_whenReportExists() {
+    void getPeriodicReportWhenReportExists() {
         // given
         given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now()))
                 .willReturn(Optional.of(report));
@@ -70,7 +70,7 @@ class PeriodicReportUseCaseTest {
 
     @Test
     @DisplayName("리포트가 존재하지 않으면 emptyResponse를 반환한다")
-    void getPeriodicReport_whenReportDoesNotExist() {
+    void getPeriodicReportWhenReportDoesNotExist() {
         // given
         given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now()))
                 .willReturn(Optional.empty());
@@ -87,7 +87,7 @@ class PeriodicReportUseCaseTest {
 
     @Test
     @DisplayName("Service에서 예외가 발생하면 예외가 전파된다")
-    void getPeriodicReport_whenServiceThrowsException() {
+    void getPeriodicReportWhenServiceThrowsException() {
         // given
         given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now()))
                 .willThrow(new RuntimeException("DB 에러"));
@@ -100,21 +100,24 @@ class PeriodicReportUseCaseTest {
     }
 
     @Test
-    void getPeriodicReport_whenTypeIsNull() {
+    @DisplayName("type이 null이면 예외 발생")
+    void getPeriodicReportWhenTypeIsNull() {
         assertThatThrownBy(() -> periodicReportUseCase.getPeriodicReport(null, 1L, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("잘못된 요청입니다.");
     }// 불필요할수 있지만 혹시 몰라 작성
 
     @Test
-    void getPeriodicReport_whenDateIsNull() {
+    @DisplayName("date가 null이면 예외 발생")
+    void getPeriodicReportWhenDateIsNull() {
         assertThatThrownBy(() -> periodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("잘못된 요청입니다.");
     }// 불필요할수 있지만 혹시 몰라 작성
 
     @Test
-    void getPeriodicReport_whenUserNoIsNull() {
+    @DisplayName("userNo가 null이면 예외 발생")
+    void getPeriodicReportWhenUserNoIsNull() {
         assertThatThrownBy(() -> periodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, null, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("인증이 필요합니다.");
