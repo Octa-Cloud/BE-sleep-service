@@ -27,6 +27,19 @@ jwt-properties:
 #    org.hibernate.SQL: DEBUG
 #    org.hibernate.type.descriptor.sql: TRACE
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,liveness,readiness
+  endpoint:
+    health:
+      show-details: always
+    liveness:
+      enabled: true
+    readiness:
+      enabled: true
+
 springdoc:
   api-docs:
     enabled: true
