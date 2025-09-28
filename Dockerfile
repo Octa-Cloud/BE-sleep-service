@@ -44,4 +44,4 @@ ENTRYPOINT ["java", \
     "-XX:+UseG1GC", \
     "-XX:+UseStringDeduplication", \
     "-Djava.security.egd=file:/dev/./urandom", \
-    "-jar", "/app.jar"]
+    "-jar", "app.jar"]
