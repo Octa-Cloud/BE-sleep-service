@@ -2,7 +2,7 @@ package com.project.sleep.domain.application.usecase;
 
 import com.project.sleep.domain.application.dto.response.GetSleepPatternsResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
-import com.project.sleep.domain.domain.service.GetSleepPatternsService;
+import com.project.sleep.domain.domain.service.SleepPatternsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetSleepPatternsUseCase {
 
-    private final GetSleepPatternsService getSleepPatternsService;
+    private final SleepPatternsService getSleepPatternsService;
 
     public List<GetSleepPatternsResponse> getSleepPatterns(Long userNo, LocalDate startDate, LocalDate endDate) {
 

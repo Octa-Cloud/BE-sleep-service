@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 
-@Tag(name = "SleepSummary", description = "수면 기록 관련 API")
+@Tag(name = "Sleep")
 @RequestMapping("/api/sleep/summary")
-public interface SleepSummaryApiSpec {
+public interface GetSleepSummaryApiSpec {
 
     @Operation(
             summary = "일별 수면 기록 조회",

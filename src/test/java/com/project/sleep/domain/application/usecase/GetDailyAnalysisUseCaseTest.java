@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AnalysisDayUseCaseTest {
+class GetDailyAnalysisUseCaseTest {
 
     @Mock
     private AnalysisDayService analysisDayService;
 
     @InjectMocks
-    private AnalysisDayUseCase useCase;
+    private GetDailyAnalysisUseCase useCase;
 
     @Test
     void getDailyReportWhenUserAndDateValid() {

@@ -3,8 +3,6 @@ package com.project.sleep.domain.application.usecase;
 import com.project.sleep.domain.application.dto.response.SleepSummaryResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
 import com.project.sleep.domain.domain.service.DailySleepRecordService;
-import com.project.sleep.global.exception.RestApiException;
-import com.project.sleep.global.exception.code.status.GlobalErrorStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SleepSummaryUseCase {
+public class GetSleepSummaryUseCase {
     private final DailySleepRecordService dailySleepRecordService;
 
     // Daily API 로직

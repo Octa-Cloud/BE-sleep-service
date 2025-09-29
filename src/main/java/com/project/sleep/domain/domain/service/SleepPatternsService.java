@@ -13,12 +13,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GetSleepPatternsService {
+public class SleepPatternsService {
 
     private final SleepRecordRepository sleepRecordRepository;
 
     public List<DailySleepRecord> getSleepRecords(Long userNo, LocalDate startDate, LocalDate endDate) {
-
         // 한국 시간 기준으로 날짜 변환
         Date startDateTime = Date.from(startDate.atStartOfDay(ZoneId.of("Asia/Seoul")).toInstant());
         Date endDateTime = Date.from(endDate.atTime(LocalTime.MAX).atZone(ZoneId.of("Asia/Seoul")).toInstant());

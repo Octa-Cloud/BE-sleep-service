@@ -16,10 +16,6 @@ import java.util.List;
 public class DailyReport {
 
     @Id
-    private String dailyReportId;   // ← 여기서 ‘id’ 대신 문서명 포함
-
-    // 비즈니스 키(표시/정렬용)
-    @Field("daily_report_no")
     private Long dailyReportNo;
 
     @Field(value = "sleep_date")
@@ -46,10 +42,10 @@ public class DailyReport {
     private String memo;
 
     @Field("microwave_grades")
-    private List<Double> microwaveGrades= new ArrayList<>();
+    private List<Double> microwaveGrades = new ArrayList<>();
 
     @Field("noise_event_types")
-    private List<String> noiseEventTypes= new ArrayList<>();
+    private List<String> noiseEventTypes = new ArrayList<>();
 
     @Field("analysis_title")
     private String analysisTitle;
@@ -58,7 +54,7 @@ public class DailyReport {
     private String analysisDescription;
 
     @Field("analysis_step")
-    private List<String> analysisSteps= new ArrayList<>();
+    private List<String> analysisSteps = new ArrayList<>();
 
     @Field("analysis_difficulty")
     private String analysisDifficulty;

@@ -2,7 +2,7 @@ package com.project.sleep.domain.application.usecase;
 
 import com.project.sleep.domain.application.dto.response.GetSleepPatternsResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
-import com.project.sleep.domain.domain.service.GetSleepPatternsService;
+import com.project.sleep.domain.domain.service.SleepPatternsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class GetSleepPatternsUseCaseTest {
 
     @Mock
-    private GetSleepPatternsService getSleepPatternsService;
+    private SleepPatternsService getSleepPatternsService;
 
     @InjectMocks
     private GetSleepPatternsUseCase getSleepPatternsUseCase;

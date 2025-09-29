@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
-public class  AnalysisDayUseCase {
+public class GetDailyAnalysisUseCase {
     private final AnalysisDayService analysisDayService;
 
     public DailyReport getDailyAnalysis(Long userNo, LocalDate date) {

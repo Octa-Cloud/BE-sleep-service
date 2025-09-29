@@ -1,18 +1,21 @@
 package com.project.sleep.domain.ui.spec;
 
 import com.project.sleep.domain.application.dto.response.PeriodicReportResponse;
+import com.project.sleep.global.annotation.CurrentUser;
 import com.project.sleep.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 
 @Tag(name = "Sleep")
 @RequestMapping("/api/sleep/analysis")
-public interface PeriodicReportApiSpec {
+public interface GetPeriodicReportApiSpec {
 
     @Operation(
             summary = "주간 통계 조회 API",
@@ -21,8 +24,13 @@ public interface PeriodicReportApiSpec {
     )
     @GetMapping("/weekly")
     BaseResponse<PeriodicReportResponse> getWeeklyReport(
-            @Parameter(hidden = true) Long userNo,
-            @Parameter(description = "조회 기준 날짜 (해당 주의 시작 날짜를 반환)") LocalDate date
+            @CurrentUser
+            @Parameter(hidden = true)
+            Long userNo,
+            @RequestParam
+            @Parameter(description = "조회 기준 날짜 (해당 주의 시작 날짜를 반환)")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date
     );
 
     @Operation(
@@ -32,7 +40,12 @@ public interface PeriodicReportApiSpec {
     )
     @GetMapping("/monthly")
     BaseResponse<PeriodicReportResponse> getMonthlyReport(
-            @Parameter(hidden = true) Long userNo,
-            @Parameter(description = "조회 기준 날짜 (해당 월의 시작 날짜를 반환)") LocalDate date
+            @CurrentUser
+            @Parameter(hidden = true)
+            Long userNo,
+            @RequestParam
+            @Parameter(description = "조회 기준 날짜 (해당 월의 시작 날짜를 반환)")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date
     );
 }

@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8085
 
 spring:
   data:
@@ -49,4 +49,4 @@ springdoc:
     operations-sorter: method
     enabled: true
   paths-to-match:
-    - /api/**
+    - /api/be/sleep-service/v3/api-docs

@@ -19,13 +19,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
-class PeriodicReportUseCaseTest {
+class GetPeriodicReportUseCaseTest {
 
     @Mock
     private PeriodicReportService periodicReportService;
 
     @InjectMocks
-    private PeriodicReportUseCase periodicReportUseCase;
+    private GetPeriodicReportUseCase getPeriodicReportUseCase;
 
     private PeriodicReport report;
 
@@ -60,7 +60,7 @@ class PeriodicReportUseCaseTest {
 
         // when
         PeriodicReportResponse response =
-                periodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now());
+                getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now());
 
         // then
         assertThat(response.score()).isEqualTo(85);
@@ -77,7 +77,7 @@ class PeriodicReportUseCaseTest {
 
         // when
         PeriodicReportResponse response =
-                periodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now());
+                getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now());
 
         // then
         assertThat(response.score()).isEqualTo(0);
@@ -94,7 +94,7 @@ class PeriodicReportUseCaseTest {
 
         // when & then
         assertThatThrownBy(() ->
-                periodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now())
+                getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now())
         ).isInstanceOf(RuntimeException.class)
                 .hasMessage("DB 에러");
     }
@@ -102,7 +102,7 @@ class PeriodicReportUseCaseTest {
     @Test
     @DisplayName("type이 null이면 예외 발생")
     void getPeriodicReportWhenTypeIsNull() {
-        assertThatThrownBy(() -> periodicReportUseCase.getPeriodicReport(null, 1L, LocalDate.now()))
+        assertThatThrownBy(() -> getPeriodicReportUseCase.getPeriodicReport(null, 1L, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("잘못된 요청입니다.");
     }// 불필요할수 있지만 혹시 몰라 작성
@@ -110,7 +110,7 @@ class PeriodicReportUseCaseTest {
     @Test
     @DisplayName("date가 null이면 예외 발생")
     void getPeriodicReportWhenDateIsNull() {
-        assertThatThrownBy(() -> periodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 1L, null))
+        assertThatThrownBy(() -> getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("잘못된 요청입니다.");
     }// 불필요할수 있지만 혹시 몰라 작성
@@ -118,7 +118,7 @@ class PeriodicReportUseCaseTest {
     @Test
     @DisplayName("userNo가 null이면 예외 발생")
     void getPeriodicReportWhenUserNoIsNull() {
-        assertThatThrownBy(() -> periodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, null, LocalDate.now()))
+        assertThatThrownBy(() -> getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, null, LocalDate.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("인증이 필요합니다.");
     }

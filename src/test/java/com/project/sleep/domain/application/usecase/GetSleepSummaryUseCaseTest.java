@@ -3,8 +3,6 @@ package com.project.sleep.domain.application.usecase;
 import com.project.sleep.domain.application.dto.response.SleepSummaryResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
 import com.project.sleep.domain.domain.service.DailySleepRecordService;
-import com.project.sleep.global.exception.RestApiException;
-import com.project.sleep.global.exception.code.status.GlobalErrorStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,13 +19,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
-class SleepSummaryUseCaseTest {
+class GetSleepSummaryUseCaseTest {
 
     @Mock
     private DailySleepRecordService dailySleepRecordService;
 
     @InjectMocks
-    private SleepSummaryUseCase sleepSummaryUseCase;
+    private GetSleepSummaryUseCase getSleepSummaryUseCase;
 
     private final Long userNo = 1L;
     private final LocalDate date = LocalDate.of(2023, 10, 26);
@@ -42,7 +40,7 @@ class SleepSummaryUseCaseTest {
         given(dailySleepRecordService.getRecent8SleepRecordsByUserNo(userNo)).willReturn(mockRecords);
 
         // When - 유스케이스 메서드 호출
-        List<SleepSummaryResponse> result = sleepSummaryUseCase.getRecentSummary(userNo);
+        List<SleepSummaryResponse> result = getSleepSummaryUseCase.getRecentSummary(userNo);
 
         // Then - 8개의 응답 객체가 반환되었는지 검증
         assertNotNull(result);
@@ -57,7 +55,7 @@ class SleepSummaryUseCaseTest {
         given(dailySleepRecordService.getDailySleepRecordByUserNoAndDate(userNo, date)).willReturn(mockRecord);
 
         // When - 유스케이스 메서드 호출
-        SleepSummaryResponse result = sleepSummaryUseCase.getDailySummary(userNo, date);
+        SleepSummaryResponse result = getSleepSummaryUseCase.getDailySummary(userNo, date);
 
         // Then - 올바른 응답 객체가 반환되었는지 검증
         assertNotNull(result);

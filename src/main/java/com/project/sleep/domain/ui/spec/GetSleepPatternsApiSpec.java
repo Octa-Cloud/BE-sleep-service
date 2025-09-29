@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.util.List;
 
-@Tag(name = "Sleep Pattern")
-public interface SleepPatternsApiSpec {
+@Tag(name = "Sleep")
+public interface GetSleepPatternsApiSpec {
 
     @Operation(
             summary = "특정 기간 수면 시간 및 점수 조회 API",
