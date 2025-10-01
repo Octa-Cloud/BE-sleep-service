@@ -16,7 +16,10 @@ public class SetSleepGoalController implements SetSleepGoalApiSpec {
     private final SetSleepGoalUseCase setSleepGoalUseCase;
 
     @Override
-    public BaseResponse<Void> set(Long userNo, @Valid @RequestBody SleepGoalRequest request) {
+    public BaseResponse<Void> set(
+            Long userNo,
+            @Valid @RequestBody SleepGoalRequest request
+    ) {
         setSleepGoalUseCase.execute(userNo, request);
         return BaseResponse.onSuccess();
     }
