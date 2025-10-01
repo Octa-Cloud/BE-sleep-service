@@ -42,7 +42,7 @@ class AnalysisDayServiceTest {
         Date expectedKey = Date.from(date.atStartOfDay(ZoneOffset.UTC).toInstant());
 
         DailyReport report = DailyReport.builder()
-                .dailyReportId("id-20250922")
+                .dailyReportNo("id-20250922")
                 .userNo(userNo)
                 .build();
 
@@ -80,7 +80,7 @@ class AnalysisDayServiceTest {
     void getDailyReportWhenDateIsNull() {
         // Given
         DailyReport report = DailyReport.builder()
-                .dailyReportId("id-today")
+                .dailyReportNo("id-today")
                 .userNo(userNo)
                 .build();
 

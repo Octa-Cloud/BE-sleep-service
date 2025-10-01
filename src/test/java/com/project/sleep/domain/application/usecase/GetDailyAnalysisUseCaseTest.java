@@ -31,7 +31,7 @@ class GetDailyAnalysisUseCaseTest {
         Long userNo = 100L;
         LocalDate date = LocalDate.of(2025, 9, 22);
         DailyReport mock = DailyReport.builder()
-                .dailyReportId("id-1")
+                .dailyReportNo("id-1")
                 .userNo(userNo)
                 .build();
 
@@ -51,7 +51,7 @@ class GetDailyAnalysisUseCaseTest {
         // Given
         Long userNo = 200L;
         DailyReport mock = DailyReport.builder()
-                .dailyReportId("id-2")
+                .dailyReportNo("id-2")
                 .userNo(userNo)
                 .build();
 
