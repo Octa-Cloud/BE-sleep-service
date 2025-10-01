@@ -16,7 +16,7 @@ import java.util.List;
 public class DailyReport {
 
     @Id
-    private Long dailyReportNo;
+    private String dailyReportNo;
 
     @Field(value = "sleep_date")
     private LocalDateTime sleepDate;

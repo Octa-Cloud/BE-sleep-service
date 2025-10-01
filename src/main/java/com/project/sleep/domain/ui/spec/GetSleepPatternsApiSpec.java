@@ -1,6 +1,6 @@
 package com.project.sleep.domain.ui.spec;
 
-import com.project.sleep.domain.application.dto.response.GetSleepPatternsResponse;
+import com.project.sleep.domain.application.dto.response.SleepPatternsResponse;
 import com.project.sleep.global.annotation.CurrentUser;
 import com.project.sleep.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +21,7 @@ public interface GetSleepPatternsApiSpec {
             description = "사용자의 특정 기간(startDate, endDate)에 해당하는 일별 수면 데이터(날짜, 점수, 총 수면 시간) 리스트를 조회합니다."
     )
     @GetMapping("/api/sleep/patterns")
-    BaseResponse<List<GetSleepPatternsResponse>> getSleepPatterns(
+    BaseResponse<List<SleepPatternsResponse>> getSleepPatterns(
             @Parameter(hidden = true) // Swagger UI에서는 숨김 처리
             @CurrentUser Long userNo,
 

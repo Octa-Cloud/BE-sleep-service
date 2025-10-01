@@ -1,6 +1,6 @@
 package com.project.sleep.domain.application.usecase;
 
-import com.project.sleep.domain.application.dto.response.GetSleepPatternsResponse;
+import com.project.sleep.domain.application.dto.response.SleepPatternsResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
 import com.project.sleep.domain.domain.service.SleepPatternsService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ public class GetSleepPatternsUseCase {
 
     private final SleepPatternsService getSleepPatternsService;
 
-    public List<GetSleepPatternsResponse> getSleepPatterns(Long userNo, LocalDate startDate, LocalDate endDate) {
+    public List<SleepPatternsResponse> getSleepPatterns(Long userNo, LocalDate startDate, LocalDate endDate) {
 
         // 비즈니스 규칙: startDate는 endDate보다 이후일 수 없음
         if (startDate.isAfter(endDate)) {
@@ -26,7 +26,7 @@ public class GetSleepPatternsUseCase {
 
         // 빌더, toList 수정
         return sleepRecords.stream()
-                .map(record -> GetSleepPatternsResponse.builder()
+                .map(record -> SleepPatternsResponse.builder()
                         .date(record.getSleepDate())
                         .score(record.getScore())
                         .totalSleepTime(record.getTotalSleepTime())
