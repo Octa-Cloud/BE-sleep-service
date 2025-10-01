@@ -1,6 +1,6 @@
 package com.project.sleep.domain.domain.service;
 
-import com.project.sleep.domain.application.dto.request.SetSleepGoalRequest;
+import com.project.sleep.domain.application.dto.request.SleepGoalRequest;
 import com.project.sleep.domain.domain.entity.SleepGoal;
 import com.project.sleep.domain.domain.repository.SleepGoalRepository;
 import com.project.sleep.global.exception.RestApiException;
@@ -15,7 +15,7 @@ public class SleepGoalService {
 
     private final SleepGoalRepository sleepGoalRepository;
 
-    public void upsert(Long userNo, SetSleepGoalRequest request) {
+    public void upsert(Long userNo, SleepGoalRequest request) {
         sleepGoalRepository.findByUserNo(userNo)
                 .map(goal -> {
                     goal.update(request.goalBedTime(), request.goalWakeTime(), request.goalTotalSleepTime());

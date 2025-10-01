@@ -1,13 +1,12 @@
 package com.project.sleep.domain.ui.spec;
 
-import com.project.sleep.domain.application.dto.request.SetSleepGoalRequest;
+import com.project.sleep.domain.application.dto.request.SleepGoalRequest;
 import com.project.sleep.global.annotation.CurrentUser;
 import com.project.sleep.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Tag(name = "Sleep")
@@ -26,6 +25,6 @@ public interface SetSleepGoalApiSpec {
                     description = "목표 수면 시간 설정값",
                     required = true
             )
-            SetSleepGoalRequest request
+            SleepGoalRequest request
     );
 }

@@ -4,7 +4,7 @@ import lombok.Builder;
 import java.time.LocalDate;
 
 @Builder
-public record GetSleepPatternsResponse(
+public record SleepPatternsResponse(
         LocalDate date,
         int score,
         int totalSleepTime

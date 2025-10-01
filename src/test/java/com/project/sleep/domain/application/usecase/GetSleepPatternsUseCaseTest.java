@@ -1,6 +1,6 @@
 package com.project.sleep.domain.application.usecase;
 
-import com.project.sleep.domain.application.dto.response.GetSleepPatternsResponse;
+import com.project.sleep.domain.application.dto.response.SleepPatternsResponse;
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
 import com.project.sleep.domain.domain.service.SleepPatternsService;
 import org.junit.jupiter.api.DisplayName;
@@ -49,7 +49,7 @@ class GetSleepPatternsUseCaseTest {
                     .thenReturn(List.of(record));
 
             // When
-            List<GetSleepPatternsResponse> result =
+            List<SleepPatternsResponse> result =
                     getSleepPatternsUseCase.getSleepPatterns(userNo, start, end);
 
             // Then
@@ -74,7 +74,7 @@ class GetSleepPatternsUseCaseTest {
                     .thenReturn(Collections.emptyList());
 
             // When
-            List<GetSleepPatternsResponse> result =
+            List<SleepPatternsResponse> result =
                     getSleepPatternsUseCase.getSleepPatterns(userNo, start, end);
 
             // Then
@@ -129,7 +129,7 @@ class GetSleepPatternsUseCaseTest {
                     .thenReturn(List.of(record));
 
             // When
-            List<GetSleepPatternsResponse> result =
+            List<SleepPatternsResponse> result =
                     getSleepPatternsUseCase.getSleepPatterns(userNo, date, date);
 
             // Then
