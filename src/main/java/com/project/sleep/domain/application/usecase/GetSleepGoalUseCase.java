@@ -13,7 +13,7 @@ public class GetSleepGoalUseCase {
     private final SleepGoalService sleepGoalService;
 
     public SleepGoalResponse execute(Long userNo) {
-        SleepGoal entity = sleepGoalService.findByUserNo(userNo);
+        SleepGoal entity = sleepGoalService.findById(userNo);
         return SleepGoalResponse.from(entity);
     }
 }

@@ -13,7 +13,7 @@ public class GetTotalSleepRecordUseCase {
     private final TotalSleepRecordService totalSleepRecordService;
 
     public TotalSleepRecordResponse execute(Long userNo) {
-        TotalSleepRecord entity = totalSleepRecordService.findByUserNo(userNo);
+        TotalSleepRecord entity = totalSleepRecordService.findById(userNo);
         return TotalSleepRecordResponse.from(entity);
     }
 }

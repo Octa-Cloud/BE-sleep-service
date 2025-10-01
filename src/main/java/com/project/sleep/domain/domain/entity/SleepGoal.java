@@ -18,9 +18,6 @@ import java.time.LocalTime;
 public class SleepGoal {
 
     @Id
-    @Field(name = "goal_no")
-    private String goalNo;
-
     @Field(name = "user_no")
     private Long userNo;
 

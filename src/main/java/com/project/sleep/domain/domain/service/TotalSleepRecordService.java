@@ -14,8 +14,8 @@ public class TotalSleepRecordService {
 
     private final TotalSleepRecordRepository totalSleepRecordRepository;
 
-    public TotalSleepRecord findByUserNo(Long userNo) {
-        return totalSleepRecordRepository.findByUserNo(userNo)
+    public TotalSleepRecord findById(Long userNo) {
+        return totalSleepRecordRepository.findById(userNo)
                 .orElseThrow(() -> new RestApiException(_NOT_FOUND));
     }
 }

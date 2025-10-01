@@ -6,7 +6,7 @@ import com.project.sleep.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Tag(name = "Sleep")
 public interface GetTotalSleepRecordApiSpec {
@@ -15,7 +15,7 @@ public interface GetTotalSleepRecordApiSpec {
             summary = "누적 수면 기록 조회 API",
             description = "누적 수면 기록(평균 수면 시간, 평균 수면 점수, 평균 취침 시각)을 조회합니다."
     )
-    @PostMapping("/api/sleep/total")
+    @GetMapping("/api/sleep/total")
     BaseResponse<TotalSleepRecordResponse> get(
             @CurrentUser
             @Parameter(hidden = true)

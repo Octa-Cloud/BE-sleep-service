@@ -18,8 +18,8 @@ import java.time.LocalTime;
 public class TotalSleepRecord {
 
     @Id
-    @Field(name = "total_sleep_record_no")
-    private String totalSleepRecordNo;
+    @Field(name = "user_no")
+    private Long userNo;
 
     @Field(name = "avg_score")
     private Integer avgScore;
@@ -29,8 +29,5 @@ public class TotalSleepRecord {
 
     @Field(name = "avg_bed_time")
     private LocalTime avgBedTime;
-
-    @Field(name = "user_no")
-    private Long userNo;
 
 }

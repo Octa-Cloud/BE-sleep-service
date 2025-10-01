@@ -16,7 +16,7 @@ public class SleepGoalService {
     private final SleepGoalRepository sleepGoalRepository;
 
     public void upsert(Long userNo, SleepGoalRequest request) {
-        sleepGoalRepository.findByUserNo(userNo)
+        sleepGoalRepository.findById(userNo)
                 .map(goal -> {
                     goal.update(request.goalBedTime(), request.goalWakeTime(), request.goalTotalSleepTime());
                     return sleepGoalRepository.save(goal);
@@ -31,8 +31,8 @@ public class SleepGoalService {
                 ));
     }
 
-    public SleepGoal findByUserNo(Long userNo) {
-        return sleepGoalRepository.findByUserNo(userNo)
+    public SleepGoal findById(Long userNo) {
+        return sleepGoalRepository.findById(userNo)
                 .orElseThrow(() -> new RestApiException(_NOT_FOUND));
     }
 }
