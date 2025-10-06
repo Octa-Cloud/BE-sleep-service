@@ -2,6 +2,8 @@ package com.project.sleep.domain.domain.entity;
 
 import com.github.f4b6a3.tsid.TsidCreator;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.*;
@@ -14,6 +16,9 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Builder
 @Document(collection = "daily_sleep_record")
+@CompoundIndexes({
+        @CompoundIndex(name = "userNo_sleepDate_idx", def = "{'userNo': 1, 'sleepDate': -1}")
+})
 public class DailySleepRecord {
 
     @Id
