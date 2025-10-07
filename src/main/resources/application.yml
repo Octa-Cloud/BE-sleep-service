@@ -1,11 +1,10 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   data:
     mongodb:
-#      uri: ${MONGO_URI:mongodb://localhost:27017/mong}
-      uri: mongodb://root:1234@localhost:27017/mongTest?authSource=admin
+      uri: ${MONGO_URI:mongodb://localhost:27017/mong}
 
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
