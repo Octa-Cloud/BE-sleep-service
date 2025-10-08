@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetDailyAnalysisUseCaseTest {
+class GetDailyRecordUseCaseTest {
 
     @Mock
     private AnalysisDayService analysisDayService;
 
     @InjectMocks
-    private GetDailyAnalysisUseCase useCase;
+    private GetDailyRecordUseCase useCase;
 
     @Test
     void getDailyReportWhenUserAndDateValid() {
@@ -38,7 +38,7 @@ class GetDailyAnalysisUseCaseTest {
         when(analysisDayService.findByUserNoAndDate(userNo, date)).thenReturn(mock);
 
         // When
-        DailyReport result = useCase.getDailyAnalysis(userNo, date);
+        DailyReport result = useCase.execute(userNo, date);
 
         // Then
         assertThat(result).isSameAs(mock);
@@ -58,7 +58,7 @@ class GetDailyAnalysisUseCaseTest {
         when(analysisDayService.findByUserNoAndDate(eq(userNo), isNull())).thenReturn(mock);
 
         // When
-        DailyReport result = useCase.getDailyAnalysis(userNo, null);
+        DailyReport result = useCase.execute(userNo, null);
 
         // Then
         assertThat(result).isSameAs(mock);
@@ -75,7 +75,7 @@ class GetDailyAnalysisUseCaseTest {
                 .thenThrow(new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         // When / Then
-        assertThatThrownBy(() -> useCase.getDailyAnalysis(userNo, date))
+        assertThatThrownBy(() -> useCase.execute(userNo, date))
                 .isInstanceOf(RestApiException.class);
 
         verify(analysisDayService).findByUserNoAndDate(userNo, date);

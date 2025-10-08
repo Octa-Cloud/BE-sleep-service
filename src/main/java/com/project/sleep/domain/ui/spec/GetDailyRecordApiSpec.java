@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 
 @Tag(name = "Sleep")
-public interface GetDailyAnalysisApiSpec {
+public interface GetDailyRecordApiSpec {
 
     @Operation(
             summary = "일간 수면 분석 조회",
             description = "수면 단계별 시간/비율, AI 분석 리포트(analysis), 뇌파•소음 분석, 수면 기록 메모를 반환합니다."
 
     )
-    @GetMapping("/api/sleep/analysis/daily")
+    @GetMapping("/api/sleep/report/daily")
     BaseResponse<AnalysisDayResponse> getDailyAnalysis(
             @CurrentUser
             @Parameter(hidden = true,description = "JWT에서 추출된 사용자 ID")

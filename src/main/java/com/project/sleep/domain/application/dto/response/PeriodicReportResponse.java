@@ -3,14 +3,14 @@ package com.project.sleep.domain.application.dto.response;
 
 import com.project.sleep.domain.domain.entity.PeriodicReport;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 
 public record PeriodicReportResponse(
         Integer score,
         Integer totalSleepTime,
-        LocalDateTime bedTime,
+        LocalTime bedTime,
         Double deepSleepRatio,
         Double lightSleepRatio,
         Double remSleepRatio,
@@ -26,9 +26,9 @@ public record PeriodicReportResponse(
     public static PeriodicReportResponse mapToResponse(PeriodicReport report){
 
         return new PeriodicReportResponse(
-                report.getScore(),
-                report.getTotalSleepTime(),
-                report.getBedTime(),
+                report.getAvgScore(),
+                report.getAvgSleepTime(),
+                report.getAvgBedTime(),
                 report.getDeepSleepRatio(),
                 report.getLightSleepRatio(),
                 report.getRemSleepRatio(),

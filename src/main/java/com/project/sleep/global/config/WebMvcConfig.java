@@ -17,8 +17,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.addAll(List.of(
+        resolvers.add(
                 new CurrentUserArgumentResolver(tokenProvider)
-        ));
+        );
     }
 }

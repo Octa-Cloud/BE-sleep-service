@@ -1,12 +1,14 @@
 package com.project.sleep.domain.domain.entity;
 
-import com.github.f4b6a3.tsid.TsidCreator;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

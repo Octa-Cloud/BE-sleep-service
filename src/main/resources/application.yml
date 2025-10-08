@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 11111
 
 spring:
   data:
@@ -17,16 +17,6 @@ jwt-properties:
   token-header: Authorization
   bearer: Bearer
   id: id
-
-#logging:
-#  level:
-#    root: INFO
-#    org.springframework: DEBUG
-#    org.springframework.web: DEBUG
-#    org.springframework.boot: DEBUG
-#    com.project.user: DEBUG
-#    org.hibernate.SQL: DEBUG
-#    org.hibernate.type.descriptor.sql: TRACE
 
 management:
   endpoints:
@@ -58,4 +48,4 @@ springdoc:
     operations-sorter: method
     enabled: true
   paths-to-match:
-    - /api/be/sleep-service/v3/api-docs
+    - /api/**

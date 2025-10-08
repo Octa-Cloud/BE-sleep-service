@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 
 @Tag(name = "Sleep")
-@RequestMapping("/api/sleep/analysis")
+@RequestMapping("/api/sleep/report")
 public interface GetPeriodicReportApiSpec {
 
     @Operation(
