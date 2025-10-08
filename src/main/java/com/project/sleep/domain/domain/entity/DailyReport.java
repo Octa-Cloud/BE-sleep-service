@@ -1,18 +1,27 @@
 package com.project.sleep.domain.domain.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import lombok.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-
-@AllArgsConstructor
+@Getter
 @Builder
 @Document(collection = "daily_report")
-@Getter
+@CompoundIndex(
+        name = "uniq_user_sleepDate",
+        def = "{ 'user_no': 1, 'sleep_date': 1 }",
+        unique = true
+)
+@AllArgsConstructor
 public class DailyReport {
 
     @Id
@@ -20,7 +29,7 @@ public class DailyReport {
     private String dailyReportNo;
 
     @Field(value = "sleep_date")
-    private LocalDateTime sleepDate;
+    private LocalDate sleepDate;
 
     @Field("deep_sleep_time")
     private int deepSleepTime;
@@ -43,10 +52,10 @@ public class DailyReport {
     private String memo;
 
     @Field("microwave_grades")
-    private List<Double> microwaveGrades = new ArrayList<>();
+    private List<Double> microwaveGrades;
 
     @Field("noise_event_types")
-    private List<String> noiseEventTypes = new ArrayList<>();
+    private List<String> noiseEventTypes;
 
     @Field("analysis_title")
     private String analysisTitle;
@@ -55,7 +64,7 @@ public class DailyReport {
     private String analysisDescription;
 
     @Field("analysis_step")
-    private List<String> analysisSteps = new ArrayList<>();
+    private List<String> analysisSteps;
 
     @Field("analysis_difficulty")
     private String analysisDifficulty;

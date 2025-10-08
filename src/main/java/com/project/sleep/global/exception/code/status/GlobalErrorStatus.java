@@ -22,19 +22,9 @@ public enum GlobalErrorStatus implements BaseCodeInterface {
     _TOO_MANY_REQUEST(HttpStatus.TOO_MANY_REQUESTS, "COMMON429", "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요."),
     _PATIENT_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "COMMON400", "존재하지 않는 환자 코드입니다."),
 
-    // S3 관련 에러
-    _S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3_5001", "파일 업로드에 실패했습니다."),
-    _S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3_5002", "파일 삭제에 실패했습니다."),
-    _FAILED_READ_FILE(HttpStatus.BAD_REQUEST, "FILE002","파일을 읽는 중 문제가 발생하였습니다."),
-
-    // For test
-    TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "예외처리 테스트입니다."),
-
-    // Mail
-    FAILED_SEND_VERIFY_CODE(HttpStatus.INTERNAL_SERVER_ERROR, "MAIL001", "인증번호 전송에 실패하였습니다."),
-
-    // Sleep Record
-    _SLEEP_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "SLEEP_404_001", "해당 날짜의 수면 기록을 찾을 수 없습니다.")
+    // Sleep
+    _SLEEP_RECORD_NOT_FOUND(HttpStatus.NOT_FOUND, "SLEEP100", "해당 날짜의 수면 기록을 찾을 수 없습니다."),
+    DATE_INVALID_ARGUMENT(HttpStatus.NOT_FOUND, "SLEEP101", "시작 날짜는 끝 날짜보다 이를 수 없습니다.")
     ;
 
 

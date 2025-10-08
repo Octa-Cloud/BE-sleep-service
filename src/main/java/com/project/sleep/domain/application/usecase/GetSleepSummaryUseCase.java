@@ -15,13 +15,11 @@ import java.util.stream.Collectors;
 public class GetSleepSummaryUseCase {
     private final DailySleepRecordService dailySleepRecordService;
 
-    // Daily API 로직
     public SleepSummaryResponse getDailySummary(Long userNo, LocalDate date) {
         DailySleepRecord record = dailySleepRecordService.getDailySleepRecordByUserNoAndDate(userNo, date);
         return SleepSummaryResponse.from(record);
     }
 
-    // Recent API 로직
     public List<SleepSummaryResponse> getRecentSummary(Long userNo) {
         List<DailySleepRecord> records = dailySleepRecordService.getRecent8SleepRecordsByUserNo(userNo);
         return records.stream()

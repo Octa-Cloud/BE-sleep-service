@@ -26,7 +26,7 @@ public class GetPeriodicReportController implements GetPeriodicReportApiSpec {
             Long userNo,
             LocalDate date
     ) {
-        return BaseResponse.onSuccess(getPeriodicReportUseCase.getPeriodicReport(WEEKLY, userNo, date));
+        return BaseResponse.onSuccess(getPeriodicReportUseCase.getWeeklyReport(WEEKLY, userNo, date));
     }
 
 
@@ -35,7 +35,6 @@ public class GetPeriodicReportController implements GetPeriodicReportApiSpec {
             Long userNo,
             LocalDate date
     ) {
-        return BaseResponse.onSuccess(getPeriodicReportUseCase.getPeriodicReport(MONTHLY, userNo, date));
-
+        return BaseResponse.onSuccess(getPeriodicReportUseCase.getMonthlyReport(MONTHLY, userNo, date));
     }
 }

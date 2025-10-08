@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,15 +28,20 @@ public class PeriodicReport {
 
     private Type type; // Enum('weekly', 'monthly')
 
-    private LocalDate date;
+    @Field("start_date")
+    private LocalDate startDate;
 
-    private int score;
+    @Field("end_date")
+    private LocalDate endDate;
 
-    @Field("total_sleep_time")
-    private int totalSleepTime;
+    @Field("avg_score")
+    private int avgScore;
 
-    @Field("bed_time")
-    private LocalDateTime bedTime;
+    @Field("avg_sleep_time")
+    private int avgSleepTime;
+
+    @Field("avg_bed_time")
+    private LocalTime avgBedTime;
 
     @Field("deep_sleep_ratio")
     private double deepSleepRatio;
@@ -48,7 +53,9 @@ public class PeriodicReport {
     private double remSleepRatio;
 
     private String improvement;
+
     private String weakness;
+
     private String recommendation;
 
     @Field("predict_description")
