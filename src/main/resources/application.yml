@@ -2,9 +2,13 @@ server:
   port: 11111
 
 spring:
+  kafka:
+    bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb://localhost:27017/mong}
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongo:27017/mong?replicaSet=rs0}
+      #uri: ${MONGO_URI:mongodb://localhost:27017/mong}
 #      uri: mongodb://root:1234@localhost:27017/mongTest?authSource=admin
 
     redis:
