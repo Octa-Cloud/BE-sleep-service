@@ -58,7 +58,8 @@ public interface GetSleepSummaryApiSpec {
             }
     )
     @GetMapping("/recent")
-    BaseResponse<List<SleepSummaryResponse>> getRecentSleepSummary(
-            @Parameter(hidden = true) @CurrentUser Long userNo
+    ResponseEntity<BaseResponse<List<SleepSummaryResponse>>> getRecentSleepSummary(
+            @Parameter(hidden = true) @CurrentUser Long userNo,
+            @Parameter(hidden = true) WebRequest request
     );
 }
