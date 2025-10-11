@@ -11,6 +11,23 @@ spring:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
       port: ${SPRING_DATA_REDIS_PORT:6379}
 
+  cache:
+    type: caffeine
+    cache-names: dailySleepSummary, recentSleepSummary
+    caffeine:
+      spec:
+        # dailySleepSummary 캐시 설정
+        dailySleepSummary: expireAfterWrite=1h,maximumSize=1000
+        # recentSleepSummary 캐시 설정
+        recentSleepSummary: expireAfterWrite=10m,maximumSize=500
+
+logging:
+  level:
+    com.project.sleep: DEBUG  # 추가
+    org.springframework.cache: DEBUG
+    com.github.benmanes.caffeine: DEBUG
+
+
 jwt-properties:
   key: ${JWT_KEY:KItFWMZokpiSj6ABi42XJpNWbBqUJ4UT3mhLrXk//IjI2TgQy2Bk+2KrCk4cQDl8oFsSYH9Gr++Lqr2w6CYJnQ==}
   access-token-subject: AccessToken

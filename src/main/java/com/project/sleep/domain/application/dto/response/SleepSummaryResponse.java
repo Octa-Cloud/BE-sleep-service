@@ -1,6 +1,8 @@
 package com.project.sleep.domain.application.dto.response;
 
 import com.project.sleep.domain.domain.entity.DailySleepRecord;
+
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -11,7 +13,7 @@ public record SleepSummaryResponse(
         LocalTime bedTime,
         LocalTime wakeTime,
         LocalDate date
-) {
+) implements Serializable { // Serializable 인터페이스 구현
 
     public static SleepSummaryResponse from(DailySleepRecord record) {
         return new SleepSummaryResponse(
