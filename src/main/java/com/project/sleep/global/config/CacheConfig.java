@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -23,6 +27,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -43,6 +48,7 @@ public class CacheConfig {
         ));
 
         log.info("✅ Caffeine L1 Cache Manager initialized");
+      
         return cacheManager;
     }
 
@@ -89,11 +95,12 @@ public class CacheConfig {
                 .build();
 
         log.info("✅ Redis L2 Cache Manager initialized");
+
         return redisCacheManager;
     }
 
     /**
-     * 2단계 캐시 매니저 (Caffeine -> Redis)
+     * L1+L2를 함께 사용하는 2단계 캐시 매니저 생성
      */
     @Bean
     @Primary  // 이 매니저를 기본으로 사용
@@ -105,6 +112,8 @@ public class CacheConfig {
         return new TwoLevelCacheManager(caffeineCacheManager, redisCacheManager);
     }
 
+
+    // CaffeineCache 객체를 반환하도록 타입 변경
     private Cache buildCaffeineCache(String name, int expireMinutes, int maximumSize) {
         return new CaffeineCache(name,
                 Caffeine.newBuilder()

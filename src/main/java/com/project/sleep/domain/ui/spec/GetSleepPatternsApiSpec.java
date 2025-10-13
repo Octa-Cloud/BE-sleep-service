@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,14 +23,16 @@ public interface GetSleepPatternsApiSpec {
             description = "사용자의 특정 기간(startDate, endDate)에 해당하는 일별 수면 데이터(날짜, 점수, 총 수면 시간) 리스트를 조회합니다."
     )
     @GetMapping("/api/sleep/patterns")
-    BaseResponse<List<SleepPatternsResponse>> getSleepPatterns(
-            @Parameter(hidden = true) // Swagger UI에서는 숨김 처리
+    ResponseEntity<BaseResponse<List<SleepPatternsResponse>>> getSleepPatterns(
+            @Parameter(hidden = true)
             @CurrentUser Long userNo,
 
             @Parameter(name = "startDate", description = "조회 시작일 (YYYY-MM-DD)", required = true, example = "2025-09-01")
             @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
 
             @Parameter(name = "endDate", description = "조회 종료일 (YYYY-MM-DD)", required = true, example = "2025-09-30")
-            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate
+            @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+
+            WebRequest request
     );
 }

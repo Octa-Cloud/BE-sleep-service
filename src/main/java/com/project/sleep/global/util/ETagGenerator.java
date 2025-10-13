@@ -46,7 +46,7 @@ public class ETagGenerator {
             return "\"" + System.currentTimeMillis() + "\"";
         }
     }
-
+  
     /**
      * 약한 ETag 생성 (W/ 접두사)
      * 의미적으로 동일하지만 바이트 단위로는 다를 수 있는 경우
