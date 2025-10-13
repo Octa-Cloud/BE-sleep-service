@@ -30,6 +30,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    // Caffeine 캐시 의존성
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+
     // Kafka
     implementation 'org.springframework.kafka:spring-kafka'
 
@@ -56,6 +60,10 @@ dependencies {
     // Redis / Cache
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
+    // Redis에 객체를 JSON 형태로 저장하기 위해 Jackson 라이브러리 추가
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

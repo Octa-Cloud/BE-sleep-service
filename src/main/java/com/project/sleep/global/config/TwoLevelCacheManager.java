@@ -30,7 +30,9 @@ public class TwoLevelCacheManager implements CacheManager {
         return l1CacheManager.getCacheNames();
     }
 
-
+    /**
+     * 2단계 캐시 래퍼
+     */
     @Slf4j
     @RequiredArgsConstructor
     private static class TwoLevelCache implements Cache {
@@ -54,43 +56,73 @@ public class TwoLevelCacheManager implements CacheManager {
             // 1. L1(Caffeine)에서 조회
             ValueWrapper l1Value = l1Cache.get(key);
             if (l1Value != null) {
-                log.info("🎯 [L1 HIT] Cache: {}, Key: {}", name, key);
+                log.debug("🎯 [L1 HIT] Cache: {}, Key: {}", name, key);
                 return l1Value;
             }
 
             // 2. L2(Redis)에서 조회
-            ValueWrapper l2Value = l2Cache.get(key);
-            if (l2Value != null) {
-                log.info("🌐 [L2 HIT] Cache: {}, Key: {} -> Promoting to L1", name, key);
-                l1Cache.put(key, l2Value.get()); // L1에 데이터 승격
-                return l2Value;
+            try {
+                ValueWrapper l2Value = l2Cache.get(key);
+                if (l2Value != null) {
+                    log.debug("🌐 [L2 HIT] Cache: {}, Key: {} - Promoting to L1", name, key);
+                    // L1에 데이터 승격
+                    l1Cache.put(key, l2Value.get());
+                    return l2Value;
+                }
+            } catch (Exception e) {
+                log.warn("⚠️ [L2 ERROR] Cache: {}, Key: {} - Redis error: {}", name, key, e.getMessage());
+                // L2 에러 발생 시 L1만 사용하고 계속 진행
             }
 
-            log.info("❌ [CACHE MISS] Cache: {}, Key: {}", name, key);
+            log.debug("❌ [CACHE MISS] Cache: {}, Key: {}", name, key);
+          
             return null;
         }
 
         @Override
         public <T> T get(Object key, Class<T> type) {
-            // 이 메소드는 TwoLevelCache에서는 잘 사용되지 않으므로 기본 get을 위임합니다.
-            ValueWrapper wrapper = get(key);
-            return wrapper == null ? null : (T) wrapper.get();
+            // L1 조회
+            T l1Value = l1Cache.get(key, type);
+            if (l1Value != null) {
+                log.debug("🎯 [L1 HIT] Cache: {}, Key: {}", name, key);
+                return l1Value;
+            }
+
+            // L2 조회
+            T l2Value = l2Cache.get(key, type);
+            if (l2Value != null) {
+                log.debug("🌐 [L2 HIT] Cache: {}, Key: {} - Promoting to L1", name, key);
+                l1Cache.put(key, l2Value);
+                return l2Value;
+            }
+
+            log.debug("❌ [CACHE MISS] Cache: {}, Key: {}", name, key);
+            return null;
         }
 
         @Override
         public <T> T get(Object key, Callable<T> valueLoader) {
-            // Spring의 @Cacheable은 이 메소드를 통해 DB 조회를 실행합니다.
-            ValueWrapper wrapper = get(key);
-            if (wrapper != null) {
-                return (T) wrapper.get();
+            // L1 조회
+            T l1Value = l1Cache.get(key, (Class<T>) null);
+            if (l1Value != null) {
+                log.debug("🎯 [L1 HIT] Cache: {}, Key: {}", name, key);
+                return l1Value;
+            }
+
+            // L2 조회
+            T l2Value = l2Cache.get(key, (Class<T>) null);
+            if (l2Value != null) {
+                log.debug("🌐 [L2 HIT] Cache: {}, Key: {} - Promoting to L1", name, key);
+                l1Cache.put(key, l2Value);
+                return l2Value;
             }
 
             // DB 조회
-            log.info("🔥 [DB QUERY] Cache: {}, Key: {}", name, key);
             try {
+                log.debug("🔥 [DB QUERY] Cache: {}, Key: {}", name, key);
                 T value = valueLoader.call();
                 if (value != null) {
-                    put(key, value); // DB 조회 후 L1, L2에 저장
+                    put(key, value);
                 }
                 return value;
             } catch (Exception e) {
@@ -100,21 +132,24 @@ public class TwoLevelCacheManager implements CacheManager {
 
         @Override
         public void put(Object key, Object value) {
-            log.info("💾 [CACHE PUT] Cache: {}, Key: {} -> Storing in L1 and L2", name, key);
+            log.debug("💾 [CACHE PUT] Cache: {}, Key: {} - Storing in L1 and L2", name, key);
+            // L1과 L2 모두에 저장
             l1Cache.put(key, value);
             l2Cache.put(key, value);
         }
 
         @Override
         public void evict(Object key) {
-            log.info("🗑️ [CACHE EVICT] Cache: {}, Key: {} -> Removing from L1 and L2", name, key);
+            log.debug("🗑️ [CACHE EVICT] Cache: {}, Key: {} - Removing from L1 and L2", name, key);
+            // L1과 L2 모두에서 제거
             l1Cache.evict(key);
             l2Cache.evict(key);
         }
 
         @Override
         public void clear() {
-            log.info("🧹 [CACHE CLEAR] Cache: {} -> Clearing L1 and L2", name);
+            log.debug("🧹 [CACHE CLEAR] Cache: {} - Clearing L1 and L2", name);
+            // L1과 L2 모두 클리어
             l1Cache.clear();
             l2Cache.clear();
         }

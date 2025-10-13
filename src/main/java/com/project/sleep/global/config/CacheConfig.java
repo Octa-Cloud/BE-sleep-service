@@ -9,6 +9,10 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.CacheManager;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -28,54 +32,70 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration
-// @EnableCaching은 Spring Boot가 자동으로 처리하므로 생략 가능합니다.
+@EnableCaching
 public class CacheConfig {
 
     /**
-     * L1 캐시 (Caffeine) 매니저 생성
+     * L1 캐시 (Caffeine - 로컬 메모리)
      */
     @Bean
-    public CacheManager caffeineCacheManager(MeterRegistry meterRegistry) {
+    public CacheManager caffeineCacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
 
-        List<CaffeineCache> caches = Arrays.asList(
-                buildCaffeineCache("sleep-patterns", 30, 1000),
-                buildCaffeineCache("sleep-goal", 30, 1000)
-        );
+        cacheManager.setCaches(Arrays.asList(
+                buildCaffeineCache("dailySleepSummary", 60, 1000),
+                buildCaffeineCache("recentSleepSummary", 10, 500)
+        ));
 
-        cacheManager.setCaches(caches);
-
-        caches.forEach(cache -> CaffeineCacheMetrics.monitor(meterRegistry, cache.getNativeCache(), cache.getName()));
-        log.info("✅ Caffeine L1 Cache Manager initialized and instrumented");
-
+        log.info("✅ Caffeine L1 Cache Manager initialized");
+      
         return cacheManager;
     }
 
     /**
-     * L2 캐시 (Redis) 매니저 생성
+     * L2 캐시 (Redis - 분산 캐시)
      */
     @Bean
     public CacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
-        // ... (이전 코드와 동일) ...
+        // ObjectMapper 설정 - LocalTime, LocalDate 등 Java 8 시간 타입 지원
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        // 중요: 타입 정보를 포함하되, 더 관대한 검증 사용
         objectMapper.activateDefaultTyping(
-                BasicPolymorphicTypeValidator.builder().allowIfBaseType(Object.class).build(),
-                ObjectMapper.DefaultTyping.EVERYTHING, JsonTypeInfo.As.PROPERTY);
-        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfBaseType(Object.class)
+                        .build(),
+                ObjectMapper.DefaultTyping.EVERYTHING,  // EVERYTHING으로 변경
+                JsonTypeInfo.As.PROPERTY
+        );
+
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(objectMapper);
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
+                .disableCachingNullValues()
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(new StringRedisSerializer())
+                )
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(serializer)
+                )
+                .entryTtl(Duration.ofHours(1));
 
         RedisCacheManager redisCacheManager = RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)
-                .withCacheConfiguration("sleep-patterns", defaultConfig.entryTtl(Duration.ofMinutes(30)))
-                .withCacheConfiguration("sleep-goal", defaultConfig.entryTtl(Duration.ofHours(1)))
-                .enableStatistics()
+                .withCacheConfiguration("dailySleepSummary",
+                        defaultConfig.entryTtl(Duration.ofHours(1)))
+                .withCacheConfiguration("recentSleepSummary",
+                        defaultConfig.entryTtl(Duration.ofMinutes(10)))
                 .build();
 
-        log.info("✅ Redis L2 Cache Manager initialized with statistics enabled");
+        log.info("✅ Redis L2 Cache Manager initialized");
+
         return redisCacheManager;
     }
 
@@ -83,7 +103,7 @@ public class CacheConfig {
      * L1+L2를 함께 사용하는 2단계 캐시 매니저 생성
      */
     @Bean
-    @Primary
+    @Primary  // 이 매니저를 기본으로 사용
     public CacheManager twoLevelCacheManager(
             CacheManager caffeineCacheManager,
             CacheManager redisCacheManager
@@ -92,8 +112,9 @@ public class CacheConfig {
         return new TwoLevelCacheManager(caffeineCacheManager, redisCacheManager);
     }
 
+
     // CaffeineCache 객체를 반환하도록 타입 변경
-    private CaffeineCache buildCaffeineCache(String name, int expireMinutes, int maximumSize) {
+    private Cache buildCaffeineCache(String name, int expireMinutes, int maximumSize) {
         return new CaffeineCache(name,
                 Caffeine.newBuilder()
                         .expireAfterWrite(expireMinutes, TimeUnit.MINUTES)
