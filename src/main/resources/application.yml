@@ -5,7 +5,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_URI:mongodb://localhost:27017/mong}
-#      uri: mongodb://root:1234@localhost:27017/mongTest?authSource=admin
+      auto-index-creation: true # 인덱싱하기 위해 추가
 
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
