@@ -1,7 +1,7 @@
 package com.project.sleep.domain.application.usecase;
 
 import com.project.sleep.domain.domain.entity.DailyReport;
-import com.project.sleep.domain.domain.service.AnalysisDayService;
+import com.project.sleep.domain.domain.service.DailyReportService;
 import com.project.sleep.global.exception.RestApiException;
 import com.project.sleep.global.exception.code.status.GlobalErrorStatus;
 import org.junit.jupiter.api.Test;
@@ -17,13 +17,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class GetDailyRecordUseCaseTest {
+class GetDailyReportUseCaseTest {
 
     @Mock
-    private AnalysisDayService analysisDayService;
+    private DailyReportService dailyReportService;
 
     @InjectMocks
-    private GetDailyRecordUseCase useCase;
+    private GetDailyReportUseCase useCase;
 
     @Test
     void getDailyReportWhenUserAndDateValid() {
@@ -35,15 +35,15 @@ class GetDailyRecordUseCaseTest {
                 .userNo(userNo)
                 .build();
 
-        when(analysisDayService.findByUserNoAndDate(userNo, date)).thenReturn(mock);
+        when(dailyReportService.findByUserNoAndDate(userNo, date)).thenReturn(mock);
 
         // When
         DailyReport result = useCase.execute(userNo, date);
 
         // Then
         assertThat(result).isSameAs(mock);
-        verify(analysisDayService, times(1)).findByUserNoAndDate(userNo, date);
-        verifyNoMoreInteractions(analysisDayService);
+        verify(dailyReportService, times(1)).findByUserNoAndDate(userNo, date);
+        verifyNoMoreInteractions(dailyReportService);
     }
 
     @Test
@@ -55,15 +55,15 @@ class GetDailyRecordUseCaseTest {
                 .userNo(userNo)
                 .build();
 
-        when(analysisDayService.findByUserNoAndDate(eq(userNo), isNull())).thenReturn(mock);
+        when(dailyReportService.findByUserNoAndDate(eq(userNo), isNull())).thenReturn(mock);
 
         // When
         DailyReport result = useCase.execute(userNo, null);
 
         // Then
         assertThat(result).isSameAs(mock);
-        verify(analysisDayService).findByUserNoAndDate(eq(userNo), isNull());
-        verifyNoMoreInteractions(analysisDayService);
+        verify(dailyReportService).findByUserNoAndDate(eq(userNo), isNull());
+        verifyNoMoreInteractions(dailyReportService);
     }
     @Test
     void getDailyReportWhenServiceThrows() {
@@ -71,14 +71,14 @@ class GetDailyRecordUseCaseTest {
         Long userNo = 100L;
         LocalDate date = LocalDate.of(2025, 9, 22);
 
-        when(analysisDayService.findByUserNoAndDate(userNo, date))
+        when(dailyReportService.findByUserNoAndDate(userNo, date))
                 .thenThrow(new RestApiException(GlobalErrorStatus._NOT_FOUND));
 
         // When / Then
         assertThatThrownBy(() -> useCase.execute(userNo, date))
                 .isInstanceOf(RestApiException.class);
 
-        verify(analysisDayService).findByUserNoAndDate(userNo, date);
-        verifyNoMoreInteractions(analysisDayService);
+        verify(dailyReportService).findByUserNoAndDate(userNo, date);
+        verifyNoMoreInteractions(dailyReportService);
     }
 }

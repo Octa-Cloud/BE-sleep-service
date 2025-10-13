@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
-public class AnalysisDayService {
+public class DailyReportService {
 
     private final DailyReportRepository dailyReportRepository;
 

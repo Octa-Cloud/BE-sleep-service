@@ -5,7 +5,7 @@ import lombok.Builder;
 import java.util.List;
 
 @Builder
-public record AnalysisDayResponse(
+public record DailyReportResponse(
         // 수면 단계별 시간 (분 단위)
         Integer deepSleepTime,
         Integer lightSleepTime,
@@ -32,8 +32,8 @@ public record AnalysisDayResponse(
 ) {
 
     // 변환 로직을 DTO 안에만 둔다
-    public static AnalysisDayResponse from(DailyReport report) {
-        return AnalysisDayResponse.builder()
+    public static DailyReportResponse from(DailyReport report) {
+        return DailyReportResponse.builder()
                 .deepSleepTime(report.getDeepSleepTime())
                 .lightSleepTime(report.getLightSleepTime())
                 .remSleepTime(report.getRemSleepTime())
