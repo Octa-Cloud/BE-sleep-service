@@ -19,7 +19,7 @@ import java.time.LocalTime;
 @Builder
 @Document(collection = "daily_sleep_record")
 @CompoundIndexes({
-        @CompoundIndex(name = "userNo_sleepDate_idx", def = "{'userNo': 1, 'sleepDate': -1}")
+        @CompoundIndex(name = "userNo_sleepDate_idx", def = "{'user_no': 1, 'sleep_date': -1}")
 })
 public class DailySleepRecord {
 

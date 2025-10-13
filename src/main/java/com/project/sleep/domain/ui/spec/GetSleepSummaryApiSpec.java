@@ -9,9 +9,11 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -36,10 +38,12 @@ public interface GetSleepSummaryApiSpec {
                     )
             }
     )
+
     @GetMapping("/daily")
-    BaseResponse<SleepSummaryResponse> getDailySleepSummary(
+    ResponseEntity<BaseResponse<SleepSummaryResponse>> getDailySleepSummary( // 반환 타입 변경
             @Parameter(hidden = true) @CurrentUser Long userNo,
-            @Parameter(description = "조회하려는 날짜 (yyyy-MM-dd)", required = true) @RequestParam LocalDate date
+            @Parameter(description = "조회하려는 날짜 (yyyy-MM-dd)", required = true) @RequestParam LocalDate date,
+            @Parameter(hidden = true) WebRequest request  // 파라미터 추가
     );
 
     @Operation(
@@ -54,7 +58,8 @@ public interface GetSleepSummaryApiSpec {
             }
     )
     @GetMapping("/recent")
-    BaseResponse<List<SleepSummaryResponse>> getRecentSleepSummary(
-            @Parameter(hidden = true) @CurrentUser Long userNo
+    ResponseEntity<BaseResponse<List<SleepSummaryResponse>>> getRecentSleepSummary(
+            @Parameter(hidden = true) @CurrentUser Long userNo,
+            @Parameter(hidden = true) WebRequest request
     );
 }
