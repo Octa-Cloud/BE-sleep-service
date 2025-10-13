@@ -12,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,10 +36,11 @@ class GetPeriodicReportUseCaseTest {
         report = PeriodicReport.builder()
                 .periodicReportNo("1")
                 .type(PeriodicReport.Type.MONTHLY)
-                .date(LocalDate.now())
-                .score(85)
-                .totalSleepTime(480)
-                .bedTime(LocalDateTime.now())
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now())
+                .avgScore(85)
+                .avgSleepTime(480)
+                .avgBedTime(LocalTime.now())
                 .deepSleepRatio(0.3)
                 .lightSleepRatio(0.5)
                 .remSleepRatio(0.2)
@@ -55,12 +57,12 @@ class GetPeriodicReportUseCaseTest {
     @DisplayName("리포트가 존재하면 해당 리포트를 반환한다")
     void getPeriodicReportWhenReportExists() {
         // given
-        given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now()))
+        given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.parse("2025-12-20"), LocalDate.parse("2025-12-26")))
                 .willReturn(Optional.of(report));
 
         // when
         PeriodicReportResponse response =
-                getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now());
+                getPeriodicReportUseCase.getMonthlyReport(100L, LocalDate.parse("2025-12-23"));
 
         // then
         assertThat(response.score()).isEqualTo(85);
@@ -72,12 +74,12 @@ class GetPeriodicReportUseCaseTest {
     @DisplayName("리포트가 존재하지 않으면 emptyResponse를 반환한다")
     void getPeriodicReportWhenReportDoesNotExist() {
         // given
-        given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now()))
+        given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now(), LocalDate.now()))
                 .willReturn(Optional.empty());
 
         // when
         PeriodicReportResponse response =
-                getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now());
+                getPeriodicReportUseCase.getMonthlyReport(100L, LocalDate.parse("2025-12-23"));
 
         // then
         assertThat(response.score()).isEqualTo(0);
@@ -89,28 +91,20 @@ class GetPeriodicReportUseCaseTest {
     @DisplayName("Service에서 예외가 발생하면 예외가 전파된다")
     void getPeriodicReportWhenServiceThrowsException() {
         // given
-        given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now()))
+        given(periodicReportService.getReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.parse("2025-12-20"), LocalDate.parse("2025-12-26")))
                 .willThrow(new RuntimeException("DB 에러"));
 
         // when & then
         assertThatThrownBy(() ->
-                getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 100L, LocalDate.now())
+                getPeriodicReportUseCase.getMonthlyReport(100L, LocalDate.parse("2025-12-23"))
         ).isInstanceOf(RuntimeException.class)
                 .hasMessage("DB 에러");
     }
 
     @Test
-    @DisplayName("type이 null이면 예외 발생")
-    void getPeriodicReportWhenTypeIsNull() {
-        assertThatThrownBy(() -> getPeriodicReportUseCase.getPeriodicReport(null, 1L, LocalDate.now()))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("잘못된 요청입니다.");
-    }// 불필요할수 있지만 혹시 몰라 작성
-
-    @Test
     @DisplayName("date가 null이면 예외 발생")
     void getPeriodicReportWhenDateIsNull() {
-        assertThatThrownBy(() -> getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, 1L, null))
+        assertThatThrownBy(() -> getPeriodicReportUseCase.getMonthlyReport(1L, null))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("잘못된 요청입니다.");
     }// 불필요할수 있지만 혹시 몰라 작성
@@ -118,7 +112,7 @@ class GetPeriodicReportUseCaseTest {
     @Test
     @DisplayName("userNo가 null이면 예외 발생")
     void getPeriodicReportWhenUserNoIsNull() {
-        assertThatThrownBy(() -> getPeriodicReportUseCase.getPeriodicReport(PeriodicReport.Type.MONTHLY, null, LocalDate.now()))
+        assertThatThrownBy(() -> getPeriodicReportUseCase.getMonthlyReport(null, LocalDate.parse("2025-12-23")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("인증이 필요합니다.");
     }

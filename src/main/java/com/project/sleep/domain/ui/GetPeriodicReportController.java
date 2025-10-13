@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-import static com.project.sleep.domain.domain.entity.PeriodicReport.Type.MONTHLY;
-import static com.project.sleep.domain.domain.entity.PeriodicReport.Type.WEEKLY;
-
 @RestController
 @RequiredArgsConstructor
 public class GetPeriodicReportController implements GetPeriodicReportApiSpec {
@@ -26,7 +23,7 @@ public class GetPeriodicReportController implements GetPeriodicReportApiSpec {
             Long userNo,
             LocalDate date
     ) {
-        return BaseResponse.onSuccess(getPeriodicReportUseCase.getWeeklyReport(WEEKLY, userNo, date));
+        return BaseResponse.onSuccess(getPeriodicReportUseCase.getWeeklyReport(userNo, date));
     }
 
 
@@ -35,6 +32,6 @@ public class GetPeriodicReportController implements GetPeriodicReportApiSpec {
             Long userNo,
             LocalDate date
     ) {
-        return BaseResponse.onSuccess(getPeriodicReportUseCase.getMonthlyReport(MONTHLY, userNo, date));
+        return BaseResponse.onSuccess(getPeriodicReportUseCase.getMonthlyReport(userNo, date));
     }
 }
