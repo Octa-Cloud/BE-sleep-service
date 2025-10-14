@@ -1,110 +1,139 @@
 package com.project.sleep.global.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Configuration
 @EnableCaching
-@RequiredArgsConstructor
 public class CacheConfig {
 
-    private final RedisProperties redisProperties;
-
-    // ===== Redis Connection Factory =====
+    /**
+     * L1 캐시 (Caffeine - 로컬 메모리)
+     */
     @Bean
-    public LettuceConnectionFactory lettuceConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(
-                redisProperties.getHost(),
-                redisProperties.getPort()
-        );
-        return new LettuceConnectionFactory(config);
+    public CacheManager caffeineCacheManager() {
+        SimpleCacheManager cacheManager = new SimpleCacheManager();
+
+        cacheManager.setCaches(Arrays.asList(
+                buildCaffeineCache("dailySleepSummary", 60, 1000),
+                buildCaffeineCache("recentSleepSummary", 30, 500),
+                buildCaffeineCache("dailyReport", 30, 500),
+                buildCaffeineCache("weeklyReport", 30, 500),
+                buildCaffeineCache("monthlyReport", 30, 500),
+                buildCaffeineCache("totalSleepRecord", 30, 500),
+                buildCaffeineCache("sleepGoal", 30, 500),
+                buildCaffeineCache("sleepPattern", 30, 500)
+        ));
+
+        log.info("✅ Caffeine L1 Cache Manager initialized");
+
+        return cacheManager;
     }
 
-    // ===== Caffeine Cache =====
+    /**
+     * L2 캐시 (Redis - 분산 캐시)
+     */
     @Bean
-    public CaffeineCacheManager caffeineCacheManager() {
-        CaffeineCacheManager manager = new CaffeineCacheManager("dailyReportCache");
-        manager.setCaffeine(
-                com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
-                        .expireAfterWrite(Duration.ofMinutes(5))
-                        .maximumSize(1000)
-        );
-        return manager;
-    }
-
-    // ===== Redis Template (GenericJackson2JsonRedisSerializer 사용) =====
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        // LocalTime 지원을 위한 ObjectMapper 설정
+    public CacheManager redisCacheManager(RedisConnectionFactory connectionFactory) {
+        // ObjectMapper 설정 - LocalTime, LocalDate 등 Java 8 시간 타입 지원
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
-        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        // 타입 정보 포함을 위한 설정
+        objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        // 중요: 타입 정보를 포함하되, 더 관대한 검증 사용
         objectMapper.activateDefaultTyping(
-            objectMapper.getPolymorphicTypeValidator(),
-            ObjectMapper.DefaultTyping.NON_FINAL,
-            JsonTypeInfo.As.PROPERTY
+                BasicPolymorphicTypeValidator.builder()
+                        .allowIfBaseType(Object.class)
+                        .build(),
+                ObjectMapper.DefaultTyping.EVERYTHING,  // EVERYTHING으로 변경
+                JsonTypeInfo.As.PROPERTY
         );
 
-        Jackson2JsonRedisSerializer<Object> jacksonSerializer = new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
-
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
-
-        StringRedisSerializer stringSerializer = new StringRedisSerializer();
-        template.setKeySerializer(stringSerializer);
-        template.setHashKeySerializer(stringSerializer);
-
-        template.setValueSerializer(jacksonSerializer);
-        template.setHashValueSerializer(jacksonSerializer);
-
-        template.afterPropertiesSet();
-        return template;
-    }
-
-    // ===== Redis Cache Manager (동일한 Serializer 사용) =====
-    @Bean
-    @Primary
-    public RedisCacheManager redisCacheManager(RedisConnectionFactory connectionFactory, RedisTemplate<String, Object> redisTemplate) {
-        // RedisTemplate과 동일한 Jackson2JsonRedisSerializer 사용
-        Jackson2JsonRedisSerializer<Object> valueSerializer =
-                (Jackson2JsonRedisSerializer<Object>) redisTemplate.getValueSerializer();
+        GenericJackson2JsonRedisSerializer serializer =
+                new GenericJackson2JsonRedisSerializer(objectMapper);
 
         RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer))
-                .entryTtl(Duration.ofHours(6));
+                .disableCachingNullValues()
+                .serializeKeysWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(new StringRedisSerializer())
+                )
+                .serializeValuesWith(
+                        RedisSerializationContext.SerializationPair
+                                .fromSerializer(serializer)
+                )
+                .entryTtl(Duration.ofHours(1));
 
-        Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
-        cacheConfigs.put("weeklyReportCache", defaultConfig);
-        cacheConfigs.put("monthlyReportCache", defaultConfig.entryTtl(Duration.ofHours(12)));
-        cacheConfigs.put("totalRecordCache", defaultConfig);
-
-
-        return RedisCacheManager.builder(connectionFactory)
-                .withInitialCacheConfigurations(cacheConfigs)
-                .transactionAware()
+        RedisCacheManager redisCacheManager = RedisCacheManager.builder(connectionFactory)
+                .cacheDefaults(defaultConfig)
+                .withCacheConfiguration("dailySleepSummary",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("recentSleepSummary",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("dailyReport",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("weeklyReport",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("monthlyReport",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("totalSleepRecord",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("sleepGoal",
+                        defaultConfig.entryTtl(Duration.ofHours(1)))
+                .withCacheConfiguration("sleepPattern",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
                 .build();
+
+        log.info("✅ Redis L2 Cache Manager initialized");
+
+        return redisCacheManager;
+    }
+
+    /**
+     * L1+L2를 함께 사용하는 2단계 캐시 매니저 생성
+     */
+    @Bean
+    @Primary  // 이 매니저를 기본으로 사용
+    public CacheManager twoLevelCacheManager(
+            CacheManager caffeineCacheManager,
+            CacheManager redisCacheManager
+    ) {
+        log.info("🚀 Two-Level Cache Manager activated");
+        return new TwoLevelCacheManager(caffeineCacheManager, redisCacheManager);
+    }
+
+
+    // CaffeineCache 객체를 반환하도록 타입 변경
+    private Cache buildCaffeineCache(String name, int expireMinutes, int maximumSize) {
+        return new CaffeineCache(name,
+                Caffeine.newBuilder()
+                        .expireAfterWrite(expireMinutes, TimeUnit.MINUTES)
+                        .maximumSize(maximumSize)
+                        .recordStats()
+                        .build()
+        );
     }
 }
