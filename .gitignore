@@ -36,3 +36,9 @@ out/
 ### VS Code ###
 .vscode/
 /src/main/resources/application-jaewoo.yml
+/daily-report-dummy.js
+/grafana-enterprise_12.2.0_17949786146_darwin_amd64.tar.gz
+/periodic-report-dummy.js
+/prometheus-3.7.0-rc.0.darwin-amd64.tar.gz
+/grafana-12.2.0/
+/prometheus-3.7.0-rc.0.darwin-amd64/
