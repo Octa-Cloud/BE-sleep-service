@@ -1,15 +1,31 @@
 server:
-  port: 11111
+  port: 8080
 
 spring:
   data:
     mongodb:
       uri: ${MONGO_URI:mongodb://localhost:27017/mong}
-#      uri: mongodb://root:1234@localhost:27017/mongTest?authSource=admin
+      auto-index-creation: true
 
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
       port: ${SPRING_DATA_REDIS_PORT:6379}
+
+#logging:
+#  level:
+#    com.project.sleep: DEBUG
+#    org.springframework.cache: DEBUG
+#    com.github.benmanes.caffeine: DEBUG
+#    org.springframework.data.redis: DEBUG  # Redis 로그 추가
+logging:
+  level:
+    # 애플리케이션 로그 - INFO로 변경 (핵심만)
+    com.project.sleep: INFO
+
+    # 캐시 관련 - 모두 OFF 또는 WARN
+    org.springframework.cache: WARN
+    com.github.benmanes.caffeine: WARN
+    org.springframework.data.redis: WARN
 
 jwt-properties:
   key: ${JWT_KEY:KItFWMZokpiSj6ABi42XJpNWbBqUJ4UT3mhLrXk//IjI2TgQy2Bk+2KrCk4cQDl8oFsSYH9Gr++Lqr2w6CYJnQ==}
@@ -32,6 +48,8 @@ management:
     readiness:
       enabled: true
   metrics:
+    enable:
+      all: true # 모든 기본 메트릭 활성화 (http, jvm 등)
     tags:
       application: sleep-service
     distribution:

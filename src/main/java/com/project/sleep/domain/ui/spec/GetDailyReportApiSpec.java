@@ -1,6 +1,6 @@
 package com.project.sleep.domain.ui.spec;
 
-import com.project.sleep.domain.application.dto.response.AnalysisDayResponse;
+import com.project.sleep.domain.application.dto.response.DailyReportResponse;
 import com.project.sleep.global.annotation.CurrentUser;
 import com.project.sleep.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 
 @Tag(name = "Sleep")
-public interface GetDailyRecordApiSpec {
+public interface GetDailyReportApiSpec {
 
     @Operation(
             summary = "일간 수면 분석 조회",
@@ -21,7 +21,7 @@ public interface GetDailyRecordApiSpec {
 
     )
     @GetMapping("/api/sleep/report/daily")
-    BaseResponse<AnalysisDayResponse> getDailyAnalysis(
+    BaseResponse<DailyReportResponse> getDailyAnalysis(
             @CurrentUser
             @Parameter(hidden = true,description = "JWT에서 추출된 사용자 ID")
             Long userNo,
