@@ -5,10 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.cache.CaffeineCacheMetrics;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.CacheManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -27,7 +23,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -44,11 +39,17 @@ public class CacheConfig {
 
         cacheManager.setCaches(Arrays.asList(
                 buildCaffeineCache("dailySleepSummary", 60, 1000),
-                buildCaffeineCache("recentSleepSummary", 10, 500)
+                buildCaffeineCache("recentSleepSummary", 30, 500),
+                buildCaffeineCache("dailyReport", 30, 500),
+                buildCaffeineCache("weeklyReport", 30, 500),
+                buildCaffeineCache("monthlyReport", 30, 500),
+                buildCaffeineCache("totalSleepRecord", 30, 500),
+                buildCaffeineCache("sleepGoal", 30, 500),
+                buildCaffeineCache("sleepPattern", 30, 500)
         ));
 
         log.info("✅ Caffeine L1 Cache Manager initialized");
-      
+
         return cacheManager;
     }
 
@@ -89,9 +90,21 @@ public class CacheConfig {
         RedisCacheManager redisCacheManager = RedisCacheManager.builder(connectionFactory)
                 .cacheDefaults(defaultConfig)
                 .withCacheConfiguration("dailySleepSummary",
-                        defaultConfig.entryTtl(Duration.ofHours(1)))
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
                 .withCacheConfiguration("recentSleepSummary",
-                        defaultConfig.entryTtl(Duration.ofMinutes(10)))
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("dailyReport",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("weeklyReport",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("monthlyReport",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("totalSleepRecord",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("sleepGoal",
+                        defaultConfig.entryTtl(Duration.ofHours(1)))
+                .withCacheConfiguration("sleepPattern",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
                 .build();
 
         log.info("✅ Redis L2 Cache Manager initialized");

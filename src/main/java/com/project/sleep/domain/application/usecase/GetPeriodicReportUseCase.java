@@ -5,6 +5,7 @@ import com.project.sleep.domain.domain.entity.PeriodicReport;
 import com.project.sleep.domain.domain.service.PeriodicReportService;
 import com.project.sleep.global.util.DateConvertor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,20 +15,22 @@ import java.time.LocalDate;
 public class GetPeriodicReportUseCase {
     private final PeriodicReportService periodicReportService;
 
-    public PeriodicReportResponse getWeeklyReport(PeriodicReport.Type type, Long userNo, LocalDate date){
+    @Cacheable(value = "weeklyReport", key = "#userNo + ':' + #date")
+    public PeriodicReportResponse getWeeklyReport(Long userNo, LocalDate date){
         LocalDate start = DateConvertor.weekStart(date);
         LocalDate end = DateConvertor.weekEnd(date);
 
-        return periodicReportService.getReport(type, userNo, start, end)
+        return periodicReportService.getReport(PeriodicReport.Type.WEEKLY, userNo, start, end)
                 .map(PeriodicReportResponse::mapToResponse)
                 .orElse(PeriodicReportResponse.emptyResponse());
     }
 
-    public PeriodicReportResponse getMonthlyReport(PeriodicReport.Type type, Long userNo, LocalDate date){
+    @Cacheable(value = "monthlyReport", key = "#userNo + ':' + #date")
+    public PeriodicReportResponse getMonthlyReport(Long userNo, LocalDate date){
         LocalDate start = DateConvertor.monthStart(date);
         LocalDate end = DateConvertor.monthEndInclusive(date);
 
-        return periodicReportService.getReport(type, userNo, start, end)
+        return periodicReportService.getReport(PeriodicReport.Type.MONTHLY, userNo, start, end)
                 .map(PeriodicReportResponse::mapToResponse)
                 .orElse(PeriodicReportResponse.emptyResponse());
     }

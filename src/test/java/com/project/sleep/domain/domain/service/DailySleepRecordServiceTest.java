@@ -60,7 +60,7 @@ class DailySleepRecordServiceTest {
         // When & Then - RestApiException이 발생하는지 검증
         RestApiException thrown = assertThrows(RestApiException.class,
                 () -> dailySleepRecordService.getDailySleepRecordByUserNoAndDate(userNo, date));
-        assertEquals(GlobalErrorStatus._SLEEP_RECORD_NOT_FOUND, thrown.getErrorStatus());
+        assertEquals(GlobalErrorStatus._SLEEP_RECORD_NOT_FOUND, thrown.getErrorCode());
     }
 
     @Test

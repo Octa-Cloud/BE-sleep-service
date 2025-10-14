@@ -19,7 +19,7 @@ public class GetSleepPatternsUseCase {
     private final SleepPatternsService getSleepPatternsService;
 
     // key: userNo, startDate, endDate가 모두 같아야 같은 캐시로 취급하도록 동적 키 생성
-    @Cacheable(cacheNames = "sleep-patterns",
+    @Cacheable(cacheNames = "sleepPattern",
             key = "#userNo.toString() + ':' + #startDate.toString() + ':' + #endDate.toString()")
     public List<SleepPatternsResponse> getSleepPatterns(Long userNo, LocalDate startDate, LocalDate endDate) {
         if (startDate.isAfter(endDate))
