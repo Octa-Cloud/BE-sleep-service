@@ -13,7 +13,7 @@ public class GetSleepGoalUseCase {
 
     private final SleepGoalService sleepGoalService;
 
-    @Cacheable(cacheNames = "sleep-goal", key = "#userNo")
+    @Cacheable(cacheNames = "sleepGoal", key = "#userNo")
     public SleepGoalResponse execute(Long userNo) {
         SleepGoal entity = sleepGoalService.findById(userNo);
         return SleepGoalResponse.from(entity);

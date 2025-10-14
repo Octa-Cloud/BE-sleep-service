@@ -3,12 +3,12 @@ package com.project.sleep.domain.ui;
 import com.project.sleep.domain.application.dto.response.PeriodicReportResponse;
 import com.project.sleep.domain.application.usecase.GetPeriodicReportUseCase;
 import com.project.sleep.domain.ui.spec.GetPeriodicReportApiSpec;
-import com.project.sleep.global.annotation.CurrentUser;
-import com.project.sleep.global.common.BaseResponse;
+import com.project.sleep.global.util.ETagGenerator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
 
@@ -17,21 +17,50 @@ import java.time.LocalDate;
 public class GetPeriodicReportController implements GetPeriodicReportApiSpec {
 
     private final GetPeriodicReportUseCase getPeriodicReportUseCase;
+    private final ETagGenerator eTagGenerator;
 
     @Override
-    public BaseResponse<PeriodicReportResponse> getWeeklyReport(
+    public ResponseEntity<PeriodicReportResponse> getWeeklyReport(
             Long userNo,
-            LocalDate date
+            LocalDate date,
+            WebRequest request
     ) {
-        return BaseResponse.onSuccess(getPeriodicReportUseCase.getWeeklyReport(userNo, date));
+        PeriodicReportResponse response = getPeriodicReportUseCase.getWeeklyReport(userNo, date);
+        String etag = eTagGenerator.generate(response);
+
+        if (request.checkNotModified(etag)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED)
+                    .eTag(etag)
+                    .build();
+        }
+
+        return ResponseEntity
+                .ok()
+                .eTag(etag)
+                .body(response);
     }
 
 
     @Override
-    public BaseResponse<PeriodicReportResponse> getMonthlyReport(
+    public ResponseEntity<PeriodicReportResponse> getMonthlyReport(
             Long userNo,
-            LocalDate date
+            LocalDate date,
+            WebRequest request
     ) {
-        return BaseResponse.onSuccess(getPeriodicReportUseCase.getMonthlyReport(userNo, date));
+        PeriodicReportResponse response = getPeriodicReportUseCase.getMonthlyReport(userNo, date);
+        String etag = eTagGenerator.generate(response);
+
+        if (request.checkNotModified(etag)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED)
+                    .eTag(etag)
+                    .build();
+        }
+
+        return ResponseEntity
+                .ok()
+                .eTag(etag)
+                .body(response);
     }
 }

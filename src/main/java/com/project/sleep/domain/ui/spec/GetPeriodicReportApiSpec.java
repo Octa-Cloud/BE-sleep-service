@@ -2,14 +2,15 @@ package com.project.sleep.domain.ui.spec;
 
 import com.project.sleep.domain.application.dto.response.PeriodicReportResponse;
 import com.project.sleep.global.annotation.CurrentUser;
-import com.project.sleep.global.common.BaseResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDate;
 
@@ -23,14 +24,16 @@ public interface GetPeriodicReportApiSpec {
                     + "평균수치와 AI 점수를 반환합니다."
     )
     @GetMapping("/weekly")
-    BaseResponse<PeriodicReportResponse> getWeeklyReport(
+    ResponseEntity<PeriodicReportResponse> getWeeklyReport(
             @CurrentUser
             @Parameter(hidden = true)
             Long userNo,
             @RequestParam
             @Parameter(description = "조회 기준 날짜 (해당 주의 시작 날짜를 반환)")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate date
+            LocalDate date,
+            @Parameter(hidden = true)
+            WebRequest request
     );
 
     @Operation(
@@ -39,13 +42,15 @@ public interface GetPeriodicReportApiSpec {
                     + "평균수치와 AI 점수를 반환합니다."
     )
     @GetMapping("/monthly")
-    BaseResponse<PeriodicReportResponse> getMonthlyReport(
+    ResponseEntity<PeriodicReportResponse> getMonthlyReport(
             @CurrentUser
             @Parameter(hidden = true)
             Long userNo,
             @RequestParam
             @Parameter(description = "조회 기준 날짜 (해당 월의 시작 날짜를 반환)")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate date
+            LocalDate date,
+            @Parameter(hidden = true)
+            WebRequest request
     );
 }
