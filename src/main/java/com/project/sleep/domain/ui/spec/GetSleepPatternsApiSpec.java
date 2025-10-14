@@ -23,7 +23,7 @@ public interface GetSleepPatternsApiSpec {
             description = "사용자의 특정 기간(startDate, endDate)에 해당하는 일별 수면 데이터(날짜, 점수, 총 수면 시간) 리스트를 조회합니다."
     )
     @GetMapping("/api/sleep/patterns")
-    ResponseEntity<BaseResponse<List<SleepPatternsResponse>>> getSleepPatterns(
+    ResponseEntity<List<SleepPatternsResponse>> getSleepPatterns(
             @Parameter(hidden = true)
             @CurrentUser Long userNo,
 
@@ -32,7 +32,6 @@ public interface GetSleepPatternsApiSpec {
 
             @Parameter(name = "endDate", description = "조회 종료일 (YYYY-MM-DD)", required = true, example = "2025-09-30")
             @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
-
             WebRequest request
     );
 }

@@ -25,7 +25,7 @@ public class GetSleepSummaryController implements GetSleepSummaryApiSpec {
     private final ETagGenerator eTagGenerator;
 
     @Override
-    public ResponseEntity<BaseResponse<SleepSummaryResponse>> getDailySleepSummary(  // 반환 타입 변경
+    public ResponseEntity<SleepSummaryResponse> getDailySleepSummary(  // 반환 타입 변경
          Long userNo,
          LocalDate date,
          WebRequest request  // 파라미터 추가
@@ -43,10 +43,10 @@ public class GetSleepSummaryController implements GetSleepSummaryApiSpec {
         return ResponseEntity
                 .ok()
                 .eTag(etag)
-                .body(BaseResponse.onSuccess(response));
+                .body(response);
     }
     @Override
-    public ResponseEntity<BaseResponse<List<SleepSummaryResponse>>> getRecentSleepSummary(
+    public ResponseEntity<List<SleepSummaryResponse>> getRecentSleepSummary(
             Long userNo,
             WebRequest request
     ) {
@@ -70,6 +70,6 @@ public class GetSleepSummaryController implements GetSleepSummaryApiSpec {
         return ResponseEntity
                 .ok()
                 .eTag(etag)
-                .body(BaseResponse.onSuccess(responses));
+                .body(responses);
     }
 }

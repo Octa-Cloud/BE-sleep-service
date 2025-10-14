@@ -21,29 +21,26 @@ public class GetSleepPatternsController implements GetSleepPatternsApiSpec {
     private final ETagGenerator etagGenerator;
 
     @Override
-    public ResponseEntity<BaseResponse<List<SleepPatternsResponse>>> getSleepPatterns(
+    public ResponseEntity<List<SleepPatternsResponse>> getSleepPatterns(
             Long userNo,
             LocalDate startDate,
             LocalDate endDate,
             WebRequest request
     ) {
-//        return BaseResponse.onSuccess(getSleepPatternsUseCase.getSleepPatterns(userNo, startDate, endDate));
-        // 실제 데이터 조회 (UseCase 호출)
         List<SleepPatternsResponse> sleepPatternsData = getSleepPatternsUseCase.getSleepPatterns(userNo, startDate, endDate);
-
-        // 조회된 데이터로 ETag 생성
         String etag = etagGenerator.generate(sleepPatternsData);
 
-        // ETag 비교
         if (request.checkNotModified(etag)) {
-            // ETag가 동일하면 304 응답 반환
-            return ResponseEntity.status(304).eTag(etag).build();
+            return ResponseEntity
+                    .status(304)
+                    .eTag(etag)
+                    .build();
         }
 
         // ETag가 다르면 200 OK와 함께 데이터 반환
         return ResponseEntity
                 .ok()
                 .eTag(etag)
-                .body(BaseResponse.onSuccess(sleepPatternsData));
+                .body(sleepPatternsData);
     }
 }

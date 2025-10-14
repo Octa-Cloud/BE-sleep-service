@@ -20,8 +20,7 @@ public class GetSleepGoalController implements GetSleepGoalApiSpec {
     private final ETagGenerator etagGenerator;
 
     @Override
-    public ResponseEntity<BaseResponse<SleepGoalResponse>> get(Long userNo, WebRequest request) {
-//        return BaseResponse.onSuccess(getSleepGoalUseCase.execute(userNo));
+    public ResponseEntity<SleepGoalResponse> get(Long userNo, WebRequest request) {
         SleepGoalResponse sleepGoalData = getSleepGoalUseCase.execute(userNo);
         String etag = etagGenerator.generate(sleepGoalData);
 
@@ -35,6 +34,6 @@ public class GetSleepGoalController implements GetSleepGoalApiSpec {
         return ResponseEntity
                 .ok()
                 .eTag(etag)
-                .body(BaseResponse.onSuccess(sleepGoalData));
+                .body(sleepGoalData);
     }
 }

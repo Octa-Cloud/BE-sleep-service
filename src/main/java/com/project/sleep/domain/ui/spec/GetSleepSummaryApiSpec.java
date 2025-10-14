@@ -40,7 +40,7 @@ public interface GetSleepSummaryApiSpec {
     )
 
     @GetMapping("/daily")
-    ResponseEntity<BaseResponse<SleepSummaryResponse>> getDailySleepSummary( // 반환 타입 변경
+    ResponseEntity<SleepSummaryResponse> getDailySleepSummary( // 반환 타입 변경
             @Parameter(hidden = true) @CurrentUser Long userNo,
             @Parameter(description = "조회하려는 날짜 (yyyy-MM-dd)", required = true) @RequestParam LocalDate date,
             @Parameter(hidden = true) WebRequest request  // 파라미터 추가
@@ -58,7 +58,7 @@ public interface GetSleepSummaryApiSpec {
             }
     )
     @GetMapping("/recent")
-    ResponseEntity<BaseResponse<List<SleepSummaryResponse>>> getRecentSleepSummary(
+    ResponseEntity<List<SleepSummaryResponse>> getRecentSleepSummary(
             @Parameter(hidden = true) @CurrentUser Long userNo,
             @Parameter(hidden = true) WebRequest request
     );

@@ -19,11 +19,11 @@ public interface GetSleepGoalApiSpec {
             description = "목표 수면 시간을 조회합니다."
     )
     @GetMapping("/api/sleep/goal")
-    ResponseEntity<BaseResponse<SleepGoalResponse>> get(
+    ResponseEntity<SleepGoalResponse> get(
             @Parameter(hidden = true)
             @CurrentUser
             Long userNo,
-
+            @Parameter(hidden = true)
             WebRequest request
     );
 }
