@@ -4,7 +4,8 @@ server:
 spring:
   data:
     mongodb:
-      uri: ${MONGO_URI:mongodb://localhost:27017/mong}
+      uri: ${MONGO_URI:mongodb://localhost:27017,localhost:27018,localhost:27019/mong?replicaSet=rs0}
+      database : mong
       auto-index-creation: true
 
     redis:
