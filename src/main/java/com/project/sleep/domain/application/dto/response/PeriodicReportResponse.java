@@ -1,12 +1,20 @@
 package com.project.sleep.domain.application.dto.response;
 
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.project.sleep.domain.domain.entity.PeriodicReport;
+import lombok.Builder;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
-
+@Builder
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.CLASS,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "@class"
+)
 public record PeriodicReportResponse(
         Integer score,
         Integer totalSleepTime,
@@ -19,8 +27,6 @@ public record PeriodicReportResponse(
         String recommendation,
         String predictDescription,
         List<Integer> scorePrediction
-
-
 ){
 
     public static PeriodicReportResponse mapToResponse(PeriodicReport report){
@@ -56,4 +62,3 @@ public record PeriodicReportResponse(
         );
     }
 }
-

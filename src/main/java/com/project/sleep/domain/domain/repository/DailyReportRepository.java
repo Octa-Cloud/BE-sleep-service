@@ -9,5 +9,4 @@ import java.util.Date;
 import java.util.Optional;
 
 public interface DailyReportRepository extends MongoRepository<DailyReport, String>, DailyReportCustomRepository {
-    Optional<DailyReport> findByUserNoAndSleepDate(Long userNo, LocalDate date);
 }

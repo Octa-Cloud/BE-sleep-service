@@ -18,9 +18,8 @@ import java.util.List;
 @Document(collection = "daily_report")
 @CompoundIndex(
         name = "uniq_user_sleepDate",
-        def = "{ 'user_no': 1, 'sleep_date': 1 }",
-        unique = true
-)
+        def = "{ 'user_no': 1, 'sleep_date': 1 }"
+)// date가 null인 문서들이 있어 unique 적용 생략
 @AllArgsConstructor
 public class DailyReport {
 
