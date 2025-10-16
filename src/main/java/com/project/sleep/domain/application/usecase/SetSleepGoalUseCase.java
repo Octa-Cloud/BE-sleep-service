@@ -12,7 +12,7 @@ public class SetSleepGoalUseCase {
 
     private final SleepGoalService sleepGoalService;
 
-    @CacheEvict(cacheNames = "sleep-goal", key = "#userNo")
+    @CacheEvict(cacheNames = "sleepGoal", key = "#userNo")
     public void execute(Long userNo, SleepGoalRequest request) {
         sleepGoalService.upsert(userNo, request);
     }
