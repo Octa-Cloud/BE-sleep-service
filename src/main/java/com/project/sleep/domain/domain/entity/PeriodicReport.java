@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @Document(collection = "periodic_report")
 @CompoundIndexes({
-        @CompoundIndex(name = "user_type_date_idx", def = "{'user_no': 1, 'type': 1, 'date': -1}")
+        @CompoundIndex(name = "user_type_date_idx", def = "{'user_no': 1, 'type': 1, 'start_date': -1}")
 })
 public class PeriodicReport {
 
