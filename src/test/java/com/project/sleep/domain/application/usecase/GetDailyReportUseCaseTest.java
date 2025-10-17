@@ -1,5 +1,6 @@
 package com.project.sleep.domain.application.usecase;
 
+import com.project.sleep.domain.application.dto.response.DailyReportResponse;
 import com.project.sleep.domain.domain.entity.DailyReport;
 import com.project.sleep.domain.domain.service.DailyReportService;
 import com.project.sleep.global.exception.RestApiException;
@@ -38,7 +39,7 @@ class GetDailyReportUseCaseTest {
         when(dailyReportService.findByUserNoAndDate(userNo, date)).thenReturn(mock);
 
         // When
-        DailyReport result = useCase.execute(userNo, date);
+        DailyReportResponse result = useCase.execute(userNo, date);
 
         // Then
         assertThat(result).isSameAs(mock);
@@ -58,7 +59,7 @@ class GetDailyReportUseCaseTest {
         when(dailyReportService.findByUserNoAndDate(eq(userNo), isNull())).thenReturn(mock);
 
         // When
-        DailyReport result = useCase.execute(userNo, null);
+        DailyReportResponse result = useCase.execute(userNo, null);
 
         // Then
         assertThat(result).isSameAs(mock);

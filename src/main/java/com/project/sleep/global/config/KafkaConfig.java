@@ -33,7 +33,7 @@ public class KafkaConfig {
         cfg.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         cfg.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         cfg.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);      // 수동 커밋
-        cfg.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");  // 개발/테스트에 유리
+        cfg.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");  // 클라우드용
         cfg.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 50);           // 처리시간 고려한 배치 크기
         cfg.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 600_000);  // 10분(아카이브/복구 여유)
         return new DefaultKafkaConsumerFactory<>(cfg);
@@ -45,7 +45,7 @@ public class KafkaConfig {
         var f = new ConcurrentKafkaListenerContainerFactory<String, String>();
         f.setConsumerFactory(cf);
         f.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL_IMMEDIATE);
-        f.setConcurrency(1); // 파티션 1개 기준. 증가 시 파티션 수와 함께 조정
+        //f.setConcurrency(1); // 파티션 1개 기준. 증가 시 파티션 수와 함께 조정
         return f;
     }
 
@@ -54,9 +54,9 @@ public class KafkaConfig {
         Map<String, Object> cfg = new HashMap<>(props.buildProducerProperties());
         cfg.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         cfg.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        cfg.put(ProducerConfig.ACKS_CONFIG, "all");
-        cfg.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        cfg.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1); // 순서 보장
+       // cfg.put(ProducerConfig.ACKS_CONFIG, "all");
+        //cfg.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
+        //cfg.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1); // 순서 보장
         return new DefaultKafkaProducerFactory<>(cfg);
     }
 

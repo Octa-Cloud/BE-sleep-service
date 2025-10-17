@@ -5,6 +5,7 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +23,11 @@ public class ArchiveTtlIndexInitializerConfig {
 
     private final MongoTemplate mongo;
 
-    private static final long TTL_SECONDS = 24 * 60 * 60; // 1일
+    //클라우드 설정 예(Helm/환경변수)
+    //sleep.archive.ttl-seconds: 2592000 (30일)
+    @Value("${sleep.archive.ttl-seconds:2592000}") // 30일, 환경에서 오버라이드
+    private long ttlSeconds;
+
     private static final String TTL_FIELD = "_archivedAt";
     private static final List<String> ARCHIVE_COLL = List.of(
             "sleep_goal_archive",
@@ -42,7 +47,7 @@ public class ArchiveTtlIndexInitializerConfig {
             if (!exists) {
                 coll.createIndex(
                         Indexes.ascending(TTL_FIELD),
-                        new IndexOptions().expireAfter(TTL_SECONDS, TimeUnit.SECONDS)
+                        new IndexOptions().expireAfter(ttlSeconds, TimeUnit.SECONDS)
                 );
             }
         }

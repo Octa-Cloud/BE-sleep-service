@@ -1,16 +1,12 @@
-// com.project.sleep.domain.infra.kafka.UserDeletionConsumers.java
 package com.project.sleep.domain.infra.kafka;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.sleep.domain.domain.service.SleepArchiveService;
-import com.project.sleep.domain.domain.entity.ProcessedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.MongoTransactionManager;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,142 +15,115 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.Instant;
-
-/**
- * 삭제/보상 컨슈머.
- * 공통 정책
- * - 멱등: processed_event(eventId=PK)로 상태 추적 → 성공 건 재처리 스킵.
- * - 독성 페이로드: InvalidPayloadException 던져서 즉시 DLT(exclude).
- * - 비즈니스는 Mongo 트랜잭션(TransactionTemplate)으로 래핑.
- * - reply는 동기 전송(.get())으로 브로커 수신 보장.
- * - 성공 후 수동 ACK(오프셋 커밋).
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserDeletionConsumers {
+    /**
+     * Kafka 기반 사용자 삭제/보상 명령 컨슈머.
+     *
+     * 기능
+     * - 토픽:
+     *   - sleep.user-delete.command → 사용자 데이터 삭제
+     *   - sleep.user-delete.compensate.command → 삭제 보상(복구)
+     * - MongoDB 트랜잭션 내에서 수면 데이터 아카이브/복구 로직 실행.
+     * - Kafka Reply 토픽(sleep.user-delete.reply)으로 SUCCESS / FAIL 결과 전송.
+     *
+     * 예외 처리 정책
+     * - InvalidPayloadException: 독성 페이로드 → 즉시 DLT.
+     * - BusinessRuleException: 비즈니스 규칙 위반 → FAIL reply + TERMINAL_FAIL 마킹 + ACK.
+     * - 그 외(Exception): 기술적 장애 → 재시도/DTL 체인으로 위임.
+     *
+     * 내부 정책
+     * - 멱등성: processed_event(eventId=PK) 기반 상태 추적.
+     * - 상태 마킹: ProcessedEventStore를 통해 IN_PROGRESS / SUCCESS / ERROR / TERMINAL_FAIL 관리.
+     * - 트랜잭션: MongoTransactionManager + TransactionTemplate으로 Mongo 작업 원자성 확보.
+     * - Reply 전송: ResilientSender.sendSync()로 브로커 수신 보장(acks=all).
+     */
+    // processed_event 관리는 공통 스토어로 위임
+    private final ProcessedEventStore store;
 
-    private final MongoTemplate mongo;
     private final MongoTransactionManager txManager;
     private final SleepArchiveService archive;
     private final KafkaTemplate<String, String> kafka;
     private final ObjectMapper om;
-
-    // --- 멱등 시작 마킹 ---
-    private boolean tryBegin(String eventId, String type) {
-        try {
-            mongo.insert(ProcessedEvent.builder()
-                    .eventId(eventId).type(type).status("IN_PROGRESS")
-                    .attempts(1).updatedAt(Instant.now()).build());
-            return true; // 최초 처리
-        } catch (DuplicateKeyException e) {
-            var existing = mongo.findById(eventId, ProcessedEvent.class);
-            return existing == null || !"SUCCESS".equals(existing.getStatus()); // 성공이면 스킵
-        }
-    }
-
-    private void markSuccess(String eventId) {
-        var pe = mongo.findById(eventId, ProcessedEvent.class);
-        if (pe != null) {
-            pe.setStatus("SUCCESS");
-            pe.setUpdatedAt(Instant.now());
-            mongo.save(pe);
-        }
-    }
-
-    private void markError(String eventId, String msg) {
-        var pe = mongo.findById(eventId, ProcessedEvent.class);
-        if (pe != null) {
-            pe.setStatus("ERROR");
-            pe.setAttempts(pe.getAttempts() + 1);
-            pe.setLastError(msg);
-            pe.setUpdatedAt(Instant.now());
-            mongo.save(pe);
-        }
-    }
+    private final ResilientSender sender;
 
     // === 삭제 명령 처리 ===
     @RetryableTopic(
-            attempts = "5",
+            attempts = "4",
             backoff = @Backoff(delay = 1000, multiplier = 2.0),
-            autoCreateTopics = "true",
+            autoCreateTopics = "false",
             dltTopicSuffix = ".dlt",
-            exclude = {InvalidPayloadException.class} // 독성은 즉시 DLT
+            exclude = {InvalidPayloadException.class}
     )
     @KafkaListener(
-            topics = "user.delete.command",
+            topics = "sleep.user-delete.command",
             groupId = "sleep-service",
             containerFactory = "kafkaManualAckFactory"
     )
     public void onDeleteCommand(ConsumerRecord<String, String> rec, Acknowledgment ack) throws Exception {
-        // 0) 공통 파싱/검증 가드
-        final Parsed p;
-        try {
-            p = validateAndParse(rec.value());
-        } catch (InvalidPayloadException bad) {
-            // ⬇️ 독성 페이로드 로깅(즉시 DLT)
-            log.error("[sleep] toxic payload -> DLT, value={}", rec.value());
-            throw bad;
-        }
+        final Parsed p = parseOrThrow(rec.value());
 
         String eventId = p.eventId();
         long userNo = p.userNo();
 
-        // 멱등: 이미 성공된 이벤트면 ACK 후 종료
-        if (!tryBegin(eventId, "DELETE")) {
+        if (!store.tryBegin(eventId, "DELETE")) { // 멱등
             ack.acknowledge();
             return;
         }
 
         var tmpl = new TransactionTemplate(txManager);
         try {
-            // 1) Mongo TX 내 비즈니스
             tmpl.execute(status -> { archive.archiveAndDeleteAllOfUser(userNo); return null; });
 
-            // 2) 성공 reply 동기 전송
             var reply = om.createObjectNode()
                     .put("eventId", eventId).put("userNo", userNo)
                     .put("status", "SUCCESS").put("type", "DELETE");
-            kafka.send("user.delete.reply", String.valueOf(userNo), om.writeValueAsString(reply)).get();
+            sender.sendSync("sleep.user-delete.reply", String.valueOf(userNo), om.writeValueAsString(reply));
 
-            // 3) 상태 마킹 + ACK
-            markSuccess(eventId);
+            store.markSuccess(eventId);
             ack.acknowledge();
 
-            log.info("[sleep] DELETE ok key={}, eventId={}, userNo={}", rec.key(), eventId, userNo);
+        } catch (BusinessRuleException brx) {
+            var fail = om.createObjectNode()
+                    .put("eventId", eventId).put("userNo", userNo)
+                    .put("status", "FAIL").put("type", "DELETE")
+                    .put("code", brx.getCode().name())
+                    .put("message", brx.getMessage());
+            sender.sendSync("sleep.user-delete.reply", String.valueOf(userNo), om.writeValueAsString(fail));
+
+            store.markTerminalFailUpsert(eventId, "DELETE", brx.getCode() + ": " + brx.getMessage());
+            ack.acknowledge();
+            log.warn("[sleep] DELETE business-fail code={}, userNo={}, eventId={}, msg={}",
+                    brx.getCode(), userNo, eventId, brx.getMessage());
+
         } catch (Exception ex) {
-            markError(eventId, ex.getMessage());
-            throw ex; // 재시도 → 실패 시 .dlt
+            store.markError(eventId, ex.getMessage()); // 기술장애 → 재시도/DTL
+            throw ex;
         }
     }
 
     // === 보상(복구) 처리 ===
     @RetryableTopic(
-            attempts = "5",
+            attempts = "4",
             backoff = @Backoff(delay = 1000, multiplier = 2.0),
-            autoCreateTopics = "true",
+            autoCreateTopics = "false",
             dltTopicSuffix = ".dlt",
             exclude = {InvalidPayloadException.class}
     )
     @KafkaListener(
-            topics = "user.delete.compensate",
+            topics = "sleep.user-delete.compensate.command",
             groupId = "sleep-service",
             containerFactory = "kafkaManualAckFactory"
     )
     public void onCompensate(ConsumerRecord<String, String> rec, Acknowledgment ack) throws Exception {
-        final Parsed p;
-        try {
-            p = validateAndParse(rec.value());
-        } catch (InvalidPayloadException bad) {
-            log.error("[sleep] toxic payload -> DLT, value={}", rec.value());
-            throw bad;
-        }
+        final Parsed p = parseOrThrow(rec.value());
 
         String eventId = p.eventId();
         long userNo = p.userNo();
 
-        if (!tryBegin(eventId, "COMPENSATE")) {
+        if (!store.tryBegin(eventId, "COMPENSATE")) {
             ack.acknowledge();
             return;
         }
@@ -163,18 +132,36 @@ public class UserDeletionConsumers {
         try {
             tmpl.execute(status -> { archive.restoreAllOfUser(userNo); return null; });
 
-            var reply = om.createObjectNode()
-                    .put("eventId", eventId).put("userNo", userNo)
-                    .put("status", "SUCCESS").put("type", "COMPENSATE");
-            kafka.send("user.delete.reply", String.valueOf(userNo), om.writeValueAsString(reply)).get();
+            var ok = om.createObjectNode()
+                    .put("eventId", eventId)
+                    .put("userNo", userNo)
+                    .put("status", "SUCCESS")
+                    .put("type", "COMPENSATE");
+            sender.sendSync("sleep.user-delete.reply", String.valueOf(userNo), om.writeValueAsString(ok));
 
-            markSuccess(eventId);
+            store.markSuccess(eventId);
             ack.acknowledge();
 
             log.info("[sleep] COMPENSATE ok key={}, eventId={}, userNo={}", rec.key(), eventId, userNo);
+
+        } catch (BusinessRuleException brx) {
+            var fail = om.createObjectNode()
+                    .put("eventId", eventId)
+                    .put("userNo", userNo)
+                    .put("status", "FAIL")
+                    .put("type", "COMPENSATE")
+                    .put("code", brx.getCode().name())
+                    .put("message", brx.getMessage());
+            sender.sendSync("sleep.user-delete.reply", String.valueOf(userNo), om.writeValueAsString(fail));
+
+            store.markTerminalFailUpsert(eventId, "COMPENSATE", brx.getCode() + ": " + brx.getMessage());
+            ack.acknowledge();
+
+            log.warn("[sleep] COMPENSATE business-fail code={}, userNo={}, eventId={}, msg={}",
+                    brx.getCode(), userNo, eventId, brx.getMessage());
+
         } catch (Exception ex) {
-            log.warn("COMPENSATE failed userNo={}, eventId={}, err={}", userNo, eventId, ex.toString());
-            markError(eventId, ex.getMessage());
+            store.markError(eventId, ex.getMessage());
             throw ex;
         }
     }
@@ -182,12 +169,7 @@ public class UserDeletionConsumers {
     // === 공통 파싱/검증 ===
     private record Parsed(String eventId, long userNo) {}
 
-    /**
-     * 독성 페이로드 판별:
-     * - 필수 필드 누락/형식 오류/음수 등은 InvalidPayloadException → 즉시 DLT.
-     * - JSON 파싱 실패 또한 동일 정책 적용.
-     */
-    private Parsed validateAndParse(String raw) {
+    private Parsed parseOrThrow(String raw) {
         try {
             JsonNode n = om.readTree(raw);
             if (n == null || !n.hasNonNull("eventId") || !n.hasNonNull("userNo")) {

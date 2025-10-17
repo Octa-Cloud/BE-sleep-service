@@ -1,0 +1,16 @@
+spring:
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    admin:
+      auto-create: true
+      fail-fast: false
+    properties:
+      security.protocol: PLAINTEXT
+      sasl.mechanism:
+      sasl.jaas.config:
+    producer:
+      properties:
+        security.protocol: PLAINTEXT
+    consumer:
+      properties:
+        security.protocol: PLAINTEXT
