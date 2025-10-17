@@ -1,7 +1,7 @@
 package com.project.sleep.domain.infra.repository;
 
 import com.project.sleep.domain.domain.entity.PeriodicReport;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -13,10 +13,16 @@ import java.util.Date;
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 public class PeriodicReportCustomRepositoryImpl implements PeriodicReportCustomRepository {
 
     private final MongoTemplate mongoTemplate;
+
+    public PeriodicReportCustomRepositoryImpl(
+            @Qualifier("mongoTemplateRead") MongoTemplate mongoTemplate)
+    {
+        this.mongoTemplate = mongoTemplate;
+    }
+
 
     @Override
     public Optional<PeriodicReport> findOneByUserNoAndTypeAndDateBetween(

@@ -1,7 +1,7 @@
 package com.project.sleep.domain.infra.repository;
 
 import com.project.sleep.domain.domain.entity.DailyReport;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -11,10 +11,15 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 public class DailyReportCustomRepositoryImpl implements DailyReportCustomRepository {
 
     private final MongoTemplate mongoTemplate;
+
+    public DailyReportCustomRepositoryImpl(
+            @Qualifier("mongoTemplateRead") MongoTemplate mongoTemplate)
+    {
+        this.mongoTemplate = mongoTemplate;
+    }
 
     @Override
     public Optional<DailyReport> findOneByUserNoAndSleepDateRange(
