@@ -15,7 +15,7 @@ public class GetDailyReportUseCase {
 
     private final DailyReportService dailyReportService;
 
-    @Cacheable(value = "dailyReportCache", key = "#userNo + '_' + #date")
+    @Cacheable(value = "dailyReport", key = "#userNo + '_' + #date")
     public DailyReportResponse execute(Long userNo, LocalDate date) {
         DailyReport entity = dailyReportService.findByUserNoAndDate(userNo, date);
         return DailyReportResponse.from(entity);
