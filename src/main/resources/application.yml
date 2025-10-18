@@ -7,6 +7,9 @@ spring:
       uri: ${SPRING_DATA_MONGODB_URI:mongodb://mongodb-0.mongodb-headless.microservices-dev.svc.cluster.local:27017,mongodb-1.mongodb-headless.microservices-dev.svc.cluster.local:27017,mongodb-2.mongodb-headless.microservices-dev.svc.cluster.local:27017/mong?replicaSet=rs0&readPreference=secondaryPreferred&retryWrites=true}
       database : mong
       auto-index-creation: true
+      # Force override any JAR internal configuration
+      host: ${SPRING_DATA_MONGODB_HOST:mongodb-0.mongodb-headless.microservices-dev.svc.cluster.local}
+      port: ${SPRING_DATA_MONGODB_PORT:27017}
 
     redis:
       host: ${SPRING_DATA_REDIS_HOST:localhost}
