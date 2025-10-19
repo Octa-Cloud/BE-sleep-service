@@ -40,6 +40,7 @@ public class CacheConfig {
         cacheManager.setCaches(Arrays.asList(
                 buildCaffeineCache("dailySleepSummary", 60, 1000),
                 buildCaffeineCache("recentSleepSummary", 30, 500),
+                buildCaffeineCache("monthlySleepSummary", 30, 500),
                 buildCaffeineCache("dailyReport", 30, 500),
                 buildCaffeineCache("weeklyReport", 30, 500),
                 buildCaffeineCache("monthlyReport", 30, 500),
@@ -92,6 +93,8 @@ public class CacheConfig {
                 .withCacheConfiguration("dailySleepSummary",
                         defaultConfig.entryTtl(Duration.ofHours(6)))
                 .withCacheConfiguration("recentSleepSummary",
+                        defaultConfig.entryTtl(Duration.ofHours(6)))
+                .withCacheConfiguration("monthlySleepSummary",
                         defaultConfig.entryTtl(Duration.ofHours(6)))
                 .withCacheConfiguration("dailyReport",
                         defaultConfig.entryTtl(Duration.ofHours(6)))

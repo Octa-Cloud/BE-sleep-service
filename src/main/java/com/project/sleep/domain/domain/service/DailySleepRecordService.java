@@ -24,4 +24,12 @@ public class DailySleepRecordService {
         return dailySleepRecordRepository.findByUserNoAndSleepDate(userNo, date)
                 .orElseThrow(() -> new RestApiException(GlobalErrorStatus._SLEEP_RECORD_NOT_FOUND));
     }
+
+    public List<DailySleepRecord> getMonthlySleepRecordsByUserNo(Long userNo, Integer year, Integer month) {
+        // 해당 월의 시작일과 다음 달 첫째 날 계산
+        LocalDate startDate = LocalDate.of(year, month, 1);
+        LocalDate endDate = startDate.plusMonths(1);
+        
+        return dailySleepRecordRepository.findByUserNoAndSleepDateBetween(userNo, startDate, endDate);
+    }
 }

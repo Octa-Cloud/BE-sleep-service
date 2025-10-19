@@ -62,4 +62,22 @@ public interface GetSleepSummaryApiSpec {
             @Parameter(hidden = true) @CurrentUser Long userNo,
             @Parameter(hidden = true) WebRequest request
     );
+
+    @Operation(
+            summary = "달력 데이터 조회",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "성공",
+                            content = @Content(schema = @Schema(implementation = BaseResponse.class))
+                    )
+            }
+    )
+    @GetMapping()
+    ResponseEntity<List<SleepSummaryResponse>> getMonthlySleepSummary(
+            @Parameter(hidden = true) @CurrentUser Long userNo,
+            @Parameter(hidden = true) WebRequest request,
+            @RequestParam Integer year,
+            @RequestParam Integer month
+    );
 }

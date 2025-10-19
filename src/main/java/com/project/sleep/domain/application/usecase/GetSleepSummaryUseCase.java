@@ -35,4 +35,14 @@ public class GetSleepSummaryUseCase {
                 .map(SleepSummaryResponse::from)
                 .collect(Collectors.toList());
     }
+
+    @Cacheable(value = "monthlySleepSummary", key = "#userNo + '_' + #year + '_' + #month")
+    public List<SleepSummaryResponse> getMonthlySummary(Long userNo, Integer year, Integer month) {
+        System.out.println("🔥🔥🔥 [CACHE MISS] 월별 DB 조회 발생 - userNo: " + userNo + ", year: " + year + ", month: " + month);
+        log.warn("🔥 [CACHE MISS] 월별 DB 조회 발생 - userNo: {}, year: {}, month: {}", userNo, year, month);
+        List<DailySleepRecord> records = dailySleepRecordService.getMonthlySleepRecordsByUserNo(userNo, year, month);
+        return records.stream()
+                .map(SleepSummaryResponse::from)
+                .collect(Collectors.toList());
+    }
 }

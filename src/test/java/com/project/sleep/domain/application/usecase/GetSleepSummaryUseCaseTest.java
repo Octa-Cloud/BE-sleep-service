@@ -62,4 +62,29 @@ class GetSleepSummaryUseCaseTest {
         assertEquals(90, result.score());
         assertEquals(date, result.date());
     }
+
+    @Test
+    @DisplayName("월별 수면 기록 조회 성공")
+    void getMonthlySummary_success() {
+        // Given
+        Integer year = 2023;
+        Integer month = 10;
+        List<DailySleepRecord> mockRecords = IntStream.range(1, 6) // 5일간의 기록
+                .mapToObj(i -> DailySleepRecord.builder()
+                        .userNo(userNo)
+                        .sleepDate(LocalDate.of(year, month, i))
+                        .score(80 + i)
+                        .build())
+                .collect(Collectors.toList());
+        given(dailySleepRecordService.getMonthlySleepRecordsByUserNo(userNo, year, month)).willReturn(mockRecords);
+
+        // When
+        List<SleepSummaryResponse> result = getSleepSummaryUseCase.getMonthlySummary(userNo, year, month);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(5, result.size());
+        assertEquals(81, result.get(0).score()); // 첫 번째 기록의 점수
+        assertEquals(LocalDate.of(year, month, 1), result.get(0).date()); // 첫 번째 기록의 날짜
+    }
 }

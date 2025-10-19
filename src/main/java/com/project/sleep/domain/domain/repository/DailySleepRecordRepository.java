@@ -19,4 +19,8 @@ public interface DailySleepRecordRepository extends MongoRepository<DailySleepRe
     //@Query(value = "{ 'userNo' : ?0 }", sort = "{ 'sleepDate' : -1 }", fields = "{ 'sleepDate' : 1, 'score' : 1, 'totalSleepTime' : 1, 'bedTime' : 1, 'wakeTime' : 1 }")
     List<DailySleepRecord> findTop8ByUserNoOrderBySleepDateDesc(Long userNo);
 
+    // 특정 사용자의 특정 년월 수면 기록 조회
+    @Query(value = "{ 'userNo' : ?0, 'sleepDate' : { $gte: ?1, $lt: ?2 } }", sort = "{ 'sleepDate' : 1 }")
+    List<DailySleepRecord> findByUserNoAndSleepDateBetween(Long userNo, LocalDate startDate, LocalDate endDate);
+
 }

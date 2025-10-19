@@ -45,6 +45,7 @@ public class GetSleepSummaryController implements GetSleepSummaryApiSpec {
                 .eTag(etag)
                 .body(response);
     }
+
     @Override
     public ResponseEntity<List<SleepSummaryResponse>> getRecentSleepSummary(
             Long userNo,
@@ -52,6 +53,30 @@ public class GetSleepSummaryController implements GetSleepSummaryApiSpec {
     ) {
         // 1. 캐시에서 데이터 조회
         List<SleepSummaryResponse> responses = getSleepSummaryUseCase.getRecentSummary(userNo);
+
+        // 2. ETag 생성
+        String etag = eTagGenerator.generate(responses);
+
+        // 3. ETag 비교
+        if (request.checkNotModified(etag)) {
+            log.debug("✅ ETag matched - Returning 304 Not Modified");
+            return ResponseEntity
+                    .status(HttpStatus.NOT_MODIFIED)
+                    .eTag(etag)
+                    .build();
+        }
+
+        log.debug("📤 ETag changed - Returning 200 OK with data");
+        // 4. 200 OK + 데이터 반환
+        return ResponseEntity
+                .ok()
+                .eTag(etag)
+                .body(responses);
+    }
+
+    @Override
+    public ResponseEntity<List<SleepSummaryResponse>> getMonthlySleepSummary(Long userNo, WebRequest request, Integer year, Integer month) {
+        List<SleepSummaryResponse> responses = getSleepSummaryUseCase.getMonthlySummary(userNo, year, month);
 
         // 2. ETag 생성
         String etag = eTagGenerator.generate(responses);
